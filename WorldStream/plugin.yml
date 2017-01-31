@@ -1,0 +1,9 @@
+name: WorldStream
+version: 0.0.3
+description: Use Minecraft as a voxel-based level editor!
+authors: [DerekElam, AustinBaird]
+main: edu.utc.bkf926.WorldStream.WSServerPlugin
+commands:
+  ws:
+    description: Access WorldStream info and export directly from Minecraft.
+    usage: "Usage: /ws [export,info,status]"
