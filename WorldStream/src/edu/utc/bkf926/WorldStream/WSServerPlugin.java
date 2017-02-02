@@ -24,7 +24,7 @@ public class WSServerPlugin extends JavaPlugin{
 	
 	static ExportScope exportScope;
 	
-	public static final String VERSION = "PRE-PROTOTYPE 0.0.4";
+	public static final String VERSION = "DEV_PrePrototype_0.0.5";
 	
 	public static final int[] SOLID_SURFACE_IDS = {
 			1,2,3,4,5,7,12,13	//This covers all the most basic surfaces. Add the others after initial testing
@@ -34,6 +34,10 @@ public class WSServerPlugin extends JavaPlugin{
 	};
 	
 	@Override
+	/**
+	 * This method runs when the plugin is enabled (effectively on server start-up.)
+	 * Think of onEnable() as the "main" method of the Bukkit/Spigot plugin.
+	 */
 	public void onEnable() {
 		loadConfigValues();
 		this.saveDefaultConfig(); //Creates the initial config file - DOES NOT overwrite if it already exists
@@ -47,6 +51,14 @@ public class WSServerPlugin extends JavaPlugin{
 	}
 	
 	@Override
+	/**
+	 * This method handles all commands sent by players.
+	 * @param sender    The entity (player or console) that issued the command
+	 * @param command   The Command event object
+	 * @param label
+	 * @param args      Contains all the space-delimited arguments as a String array.
+	 * @return          true if the command runs successfully, false otherwise.
+	 */
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
 		Player pSender = (Player)sender;
@@ -85,10 +97,18 @@ public class WSServerPlugin extends JavaPlugin{
 		return false; //base case
 	}
 	
+	/**
+	 * Returns the current chunk that a player is in.
+	 * @param p
+	 * @return
+	 */
 	public Chunk getSendersCurrentChunk(Player p){
 		return p.getWorld().getChunkAt(p.getLocation());
 	}
 	
+	/**
+	 * Loads the config.yml file and sets the boolean values accordingly.
+	 */
 	public void loadConfigValues(){
 		FileConfiguration cfg = this.getConfig();
 		debug = cfg.getBoolean("debug-mode");

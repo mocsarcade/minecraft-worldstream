@@ -1,0 +1,22 @@
+package edu.utc.bkf926.WorldStream;
+
+import java.util.HashMap;
+
+public class WSBlock {
+
+	int x, y, z;
+	//Positions of the block relative to the world origin, NOT the chunk.
+	
+	private int blockType;
+	private int blockSubType;
+	private HashMap<String, Integer> metadata;
+	
+	public int getBlockID(){
+		return blockType;
+	}
+	
+	public String getBlockIDAsString(){
+		
+	}
+	
+}

@@ -1,0 +1,13 @@
+package edu.utc.bkf926.WorldStream;
+
+import java.util.HashMap;
+
+public class WSBlock {
+
+	int x, y, z;
+	//CX CY and CZ are the positions of the block within the chunk, 0-15
+	
+	private int blockType;
+	private boolean isSolid; //True if the block will make up a part of the solid surface
+	private HashMap<String, Integer> metadata;
+}

@@ -4,31 +4,45 @@ import java.util.HashMap;
 
 public class WSBlock {
 
-	int cx, cy, cz;
-	//CX CY and CZ are the positions of the block within the chunk, 0-15
+	int x, y, z;
+	//Positions of the block relative to the world origin, NOT the chunk.
 	
-	private String blockType;
-	private boolean isSolid; //True if the block will make up a part of the solid surface
-	private HashMap<String, Integer> metadata;
-	
-	/*
-	 * List of known metadata elements
-	 * facing - north, south, east, west
-	 * adjacent - north, south, east, west
-	 * attachment - north, south, east, west, down
-	 * orientation - ns, ew, ud
-	 * inverted - true/false
-	 * open - true/false
-	 * powered - true/false
-	 * hinge - left/right
-	 * growth - 0-7
-	 * item - [a number for the item inside, use for item frames or flower pots]
-	 * painting - [a number for which painting to use]
-	 */
-	
-	public void addMetadata(String name, Integer value){
-		metadata.put(name, value);
+	public WSBlock(int[] xyz, int id){
+		setCoordinates(xyz);
+		blockType = id;
 	}
 	
+	public WSBlock(int[] xyz, int[] id){
+		setCoordinates(xyz);
+		blockType = id[0];
+		blockSubType = id[1];
+	}
+	
+	private Integer blockType;
+	private Integer blockSubType;
+	private HashMap<String, Integer> metadata;
+	
+	public void setCoordinates(int[] xyz){
+		x = xyz[0];
+		y = xyz[1];
+		z = xyz[2];
+	}
+	
+	public int getBlockID(){
+		return blockType;
+	}
+	
+	/**
+	 * Returns the full block ID as a String, formatted to be written to the JSON.
+	 */
+	public String getFullBlockIDAsString(){
+		if (blockSubType==0){
+			return blockType.toString();
+		}
+		else {
+			return blockType.toString() + "_"
+					+ blockSubType.toString();
+		}
+	}
 	
 }

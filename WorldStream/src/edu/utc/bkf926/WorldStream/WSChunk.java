@@ -19,8 +19,6 @@ public class WSChunk {
 	 * The JSON writer will be responsible for culling non-visible blocks.
 	 */
 	private LinkedList<WSBlock> blocks;
-	int wx, wy, wz;
-	
 	
 	/**
 	 * Returns true if the block has at least one exposed face. Use this method for culling invisible blocks.
@@ -32,17 +30,17 @@ public class WSChunk {
 		boolean xe=false, xw=false, ya=false, yb=false, zn=false, zs=false;
 		for (WSBlock bi : blocks){
 			if (bi==b) inchunk=true;
-			if (bi.cy == b.cy && bi.cz == b.cz){
-				if (bi.cx == b.cx+1) xe=true;
-				if (bi.cx == b.cx-1) xw=true;
+			if (bi.y == b.y && bi.z == b.z){
+				if (bi.x == b.x+1) xe=true;
+				if (bi.x == b.x-1) xw=true;
 			}
-			if (bi.cx == b.cx && bi.cz == b.cz){
-				if (bi.cy == b.cy+1) ya=true;
-				if (bi.cy == b.cy-1) yb=true;
+			if (bi.x == b.x && bi.z == b.z){
+				if (bi.y == b.y+1) ya=true;
+				if (bi.y == b.y-1) yb=true;
 			}
-			if (bi.cx == b.cx && bi.cy == b.cy){
-				if (bi.cz == b.cz+1) zs=true;
-				if (bi.cz == b.cz-1) zn=true;
+			if (bi.x == b.x && bi.y == b.y){
+				if (bi.z == b.z+1) zs=true;
+				if (bi.z == b.z-1) zn=true;
 			}
 		}
 		if (!inchunk) return false; //If the block is not in this chunk. Avoid letting this happen.
