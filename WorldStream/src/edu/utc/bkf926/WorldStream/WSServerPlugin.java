@@ -133,4 +133,8 @@ public class WSServerPlugin extends JavaPlugin{
 		}
 	}
 	
+	public void exportChunk(Player p) throws IOException{
+		WSChunk exc = new WSChunk(getSendersCurrentChunk(p));
+		WSJSONWriter.writeChunk(exc);
+	}
 }

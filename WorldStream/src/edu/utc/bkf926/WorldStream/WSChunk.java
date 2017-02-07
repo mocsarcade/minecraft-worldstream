@@ -2,6 +2,9 @@ package edu.utc.bkf926.WorldStream;
 
 import java.util.LinkedList;
 
+import org.bukkit.Chunk;
+import org.bukkit.block.Block;
+
 /**
  * This class represents a chunk.
  * In the game, this is a 16x16x16 area of blocks.
@@ -19,6 +22,24 @@ public class WSChunk {
 	 * The JSON writer will be responsible for culling non-visible blocks.
 	 */
 	private LinkedList<WSBlock> blocks;
+	
+	/**
+	 * Constructs a new WSChunk from a Spigot Chunk.
+	 * TODO this is horribly inefficient. We need to re-do this at some point to either use smaller sub-chunks or somehow check for changes instead of exporting the entire thing.
+	 */
+	@SuppressWarnings("deprecation")
+	public WSChunk(Chunk c){
+		blocks = new LinkedList<WSBlock>();
+		for (int i=0; i<16; i++){
+			for (int j=0; j<128; j++){
+				for (int k=0; k<16; k++){
+					Block b = c.getBlock(i, j, k);
+					int[] coords = {b.getX(), b.getY(), b.getZ()};
+					blocks.add(new WSBlock(coords, b.getTypeId()));
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Returns true if the block has at least one exposed face. Use this method for culling invisible blocks.

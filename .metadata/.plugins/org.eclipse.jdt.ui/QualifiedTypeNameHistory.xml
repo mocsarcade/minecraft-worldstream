@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.bukkit.configuration.file.FileConfiguration"/>
+<fullyQualifiedTypeName name="java.util.Enumeration"/>
+<fullyQualifiedTypeName name="org.bukkit.Chunk"/>
+<fullyQualifiedTypeName name="org.bukkit.block.Block"/>
+</qualifiedTypeNameHistroy>
