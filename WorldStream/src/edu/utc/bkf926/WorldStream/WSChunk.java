@@ -28,6 +28,10 @@ public class WSChunk {
 	 * TODO this is horribly inefficient. We need to re-do this at some point to either use smaller sub-chunks or somehow check for changes instead of exporting the entire thing.
 	 */
 	@SuppressWarnings("deprecation")
+	/*
+	 * We are using numeric type ID's.
+	 * We know this method is deprecated. It may be more effective to use the new textual IDs.
+	 */
 	public WSChunk(Chunk c){
 		blocks = new LinkedList<WSBlock>();
 		for (int i=0; i<16; i++){

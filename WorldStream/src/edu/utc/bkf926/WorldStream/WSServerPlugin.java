@@ -1,30 +1,34 @@
 package edu.utc.bkf926.WorldStream;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin{
+	
+	static HashMap<String, WSJSONWriter> fileWriters;
 
 	static boolean debug, serverEnabled, exportOnTimer, exportChunkOnBlockUpdate;
 	static int serverPort, exportInterval;
-	
 	static boolean exportPartials, exportDeco, exportEntities, exportCoveredBlocks;
+	static ExportScope exportScope;
 	
 	static enum ExportScope{
 		CHUNK, LOADED, WORLD
 	};
 	
-	static ExportScope exportScope;
-	
-	public static final String VERSION = "DEV_PrePrototype_0.0.5";
+	public static final String VERSION = "DEV_PrePrototype_0.0.6";
 	
 	public static final int[] SOLID_SURFACE_IDS = {
 			1,2,3,4,5,7,12,13	//This covers all the most basic surfaces. Add the others after initial testing
@@ -39,11 +43,12 @@ public class WSServerPlugin extends JavaPlugin{
 	 * Think of onEnable() as the "main" method of the Bukkit/Spigot plugin.
 	 */
 	public void onEnable() {
-		loadConfigValues();
-		this.saveDefaultConfig(); //Creates the initial config file - DOES NOT overwrite if it already exists
+		loadConfigValues();												//Load the config.yml settings
+		fileWriters = new HashMap<String, WSJSONWriter>();				//Initialize the file writer container
+		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream v"+VERSION+" enabled!");
 		if (serverEnabled) try {
-			WSHTTPEndpoint.startServer();
+			WSHTTPEndpoint.startServer();								//Start the HTTP Server
 			Bukkit.getLogger().info("HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
@@ -60,36 +65,63 @@ public class WSServerPlugin extends JavaPlugin{
 	 * @return          true if the command runs successfully, false otherwise.
 	 */
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		
-		Player pSender = (Player)sender;
-		
 		if (command.getName().equalsIgnoreCase("ws")){
-			if (args[0].equalsIgnoreCase("version")){
+			Player p = null;
+			String worldName = "";
+			
+			//Get the Player that sent the command, or send an error if the sender isn't a player
+			try {
+				p = (Player)sender;
+				worldName = p.getWorld().getName();
+			} catch (ClassCastException e){
+				sender.sendMessage(ChatColor.RED + "WorldStream cannot be run from the console.");
+				return true;
+			}
+			
+			//Send helpful message if there are no args
+			if (args.length==0){
+				sender.sendMessage(ChatColor.YELLOW + "This server is running WorldStream version "+VERSION);
+				sender.sendMessage("Usage: /ws [export | info | config]");
+				return true;
+			}
+			
+			if (args[0].equalsIgnoreCase("info")){
 				sender.sendMessage("WorldStream v"+VERSION);
 				sender.sendMessage("Use /ws export to export the map data!");
 			}
 			else if (args[0].equalsIgnoreCase("export")){
+				
 				if (args[1].equalsIgnoreCase("chunk")){
-					/*try {
-						exportCurrentChunk((Player)sender);
-						sender.sendMessage(ChatColor.GREEN+"Chunk exported successfully!");
-						Bukkit.getLogger().info("Chunk exported by "+sender.getName());
-					} catch (IOException e1){
-						sender.sendMessage(ChatColor.RED+"Export failed - Could not write the file data. Check your folder permissions.");
-					} catch (ClassCastException e2){
-						sender.sendMessage(ChatColor.RED+"You cannot export a chunk via the console."
-								+ " Please use /ws export loaded instead.");
-					}*/
+					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
+					Chunk c = getSendersCurrentChunk(p);
+					WSChunk wc = new WSChunk(c);
+					try {
+						getJSONWriter(worldName).writeChunk(wc);
+						sender.sendMessage(ChatColor.GREEN + "Complete!");
+						return true;
+					} catch (IOException e) {
+						sender.sendMessage(ChatColor.RED + "An error occurred while exporting the chunk. See the console for details.");
+						e.printStackTrace();
+						return false;
+					}
 				}
 				else if (args[1].equalsIgnoreCase("loaded")){
-					//export all loaded chunks
+					
 				}
 				else if (args[1].equalsIgnoreCase("world")){
-					//export entire map
+					
 				}
 				else {
-					sender.sendMessage(ChatColor.RED + "Usage: /ws export [chunk/loaded/world]");
+					sender.sendMessage("Usage: /ws export [chunk | loaded | world]");
+					return true;
 				}
+				
+			}
+			else if (args[0].equalsIgnoreCase("config")){
+				//TODO change some config settings via the game chat
+			}
+			else {
+				sender.sendMessage("Usage: /ws [export | info | config]");
 				return true;
 			}
 		}
@@ -134,7 +166,31 @@ public class WSServerPlugin extends JavaPlugin{
 	}
 	
 	public void exportChunk(Player p) throws IOException{
-		WSChunk exc = new WSChunk(getSendersCurrentChunk(p));
-		WSJSONWriter.writeChunk(exc);
+		
 	}
+	
+	/**
+	 * Returns the JSON Writer object for a given world by name.
+	 * If no JSON Writer exists yet for that world, a new one will be initialized.
+	 * @param worldName
+	 * @return
+	 */
+	public WSJSONWriter getJSONWriter(String worldName){
+		WSJSONWriter w = fileWriters.get(worldName);
+		if (w==null){
+			WSJSONWriter nw = new WSJSONWriter(worldName);
+			fileWriters.put(worldName, nw);
+			return nw;
+		} else {
+			return w;
+		}
+	}
+	
+	/*
+	 * --------BEGIN EVENT HANDLERS--------
+	 */
+	
+	//TODO EventHandler: Write loaded chunks when player joins / switches world. This also can create the new JSON Writer for that world.
+	
+	//TODO EventHandler: Write block on block change event
 }
