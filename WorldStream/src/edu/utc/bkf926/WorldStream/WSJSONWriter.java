@@ -13,6 +13,11 @@ public class WSJSONWriter {
 	
 	public WSJSONWriter(String worldName){
 		//TODO Constructor stub - be sure to initialize stream
+		//FileWriter(file) writer = new FileWriter(worldName +".json");
+		//Use the file writer to create a text file ending in .json
+		
+		//Derek said he would commit changes to his branch, and you should merge them
+		//into yours before going too much further, as it changes the WSBlock class
 	}
 	
 	public void writeBlock(WSBlock block) throws IOException{
