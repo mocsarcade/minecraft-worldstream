@@ -33,13 +33,14 @@ public class WSChunk {
 	 * We know this method is deprecated. It may be more effective to use the new textual IDs.
 	 */
 	public WSChunk(Chunk c){
+		bi=-1;
 		blocks = new LinkedList<WSBlock>();
 		for (int i=0; i<16; i++){
 			for (int j=0; j<128; j++){
 				for (int k=0; k<16; k++){
 					Block b = c.getBlock(i, j, k);
 					int[] coords = {b.getX(), b.getY(), b.getZ()};
-					blocks.add(new WSBlock(coords, b.getTypeId()));
+					blocks.add(new WSBlock(coords, b.getType().toString()));
 				}
 			}
 		}
@@ -74,5 +75,24 @@ public class WSChunk {
 		}
 		else return false;
 	}
-
+	
+	private int bi;
+	
+	public WSBlock nextBlock(){
+		if (bi>=blocks.size()-1){
+			return null;
+		}
+		else return blocks.get(bi++);
+	}
+	
+	public boolean hasNextBlock(){
+		if (bi>=blocks.size()-1){
+			return false;
+		}
+		return true;
+	}
+	
+	public void resetIterator(){
+		bi=-1;
+	}
 }
