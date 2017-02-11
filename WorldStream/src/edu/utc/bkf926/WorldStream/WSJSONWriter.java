@@ -13,23 +13,29 @@ public class WSJSONWriter {
 	
 	public WSJSONWriter(String worldName){
 		//TODO Constructor stub - be sure to initialize stream
-		//FileWriter(file) writer = new FileWriter(worldName +".json");
-		//Use the file writer to create a text file ending in .json
+		//Will need to edit filepath for each individual computer this runs on
+		stream = new FileOutputStream("C:/Users/austi/Documents/UTC/Capstone/Test/test.txt");
 		
-		//Derek said he would commit changes to his branch, and you should merge them
-		//into yours before going too much further, as it changes the WSBlock class
 	}
 	
 	public void writeBlock(WSBlock block) throws IOException{
 		//TODO Write a single block
+		//starts off with just the block ID until I can test it
+		stream.write(block.getBlockID());
+		
 	}
 	
 	public void writeChunk(WSChunk chunk) throws IOException{
 		//TODO Write a chunk (16x16x256)
+		while (chunk.hasNextBlock())
+		{
+			writeBlock(chunk.nextBlock());
+		}
 	}
 	
 	public void close(){
 		//TODO Close stream
+		stream.close();
 	}
 	
 	/**
