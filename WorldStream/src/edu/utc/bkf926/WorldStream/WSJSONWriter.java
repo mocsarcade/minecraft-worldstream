@@ -20,8 +20,11 @@ public class WSJSONWriter {
 	
 	public void writeBlock(WSBlock block) throws IOException{
 		//TODO Write a single block
-		//starts off with just the block ID until I can test it
-		stream.write(block.getBlockID());
+		//Creates a string to match the JSON format that Unity is expecting, then writes it to the file
+		String blockText = "{ \"blocks\" : [ { \"type\": " + block.getBlockID() + 
+				", \"position\": { \"x\"" + block.x + ", \"y\"" + block.y + ", \"z\"" + block.z
+				+ "}, ] }"
+		stream.write(blockText);
 		
 	}
 	
