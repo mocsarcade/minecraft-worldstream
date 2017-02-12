@@ -9,10 +9,8 @@ auto-export-scope: "CHUNK"
   # CHUNK = writes the current chunk (recommended)
   # LOADED = writes all loaded chunks (only use if you have something moving i.e. doors)
   # MAP = writes entire map (SLOW - avoid unless you have a beefy computer!)
-enable-http-server: false
+enable-http-server: true
 http-server-port: 80
-enable-websocket-stream: false
-websocket-port: 80
 export-partial-blocks: false
 export-decoration-blocks: false
 export-entities: false

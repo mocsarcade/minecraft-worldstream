@@ -11,8 +11,6 @@ auto-export-scope: "CHUNK"
   # MAP = writes entire map (SLOW - avoid unless you have a beefy computer!)
 enable-http-server: false
 http-server-port: 80
-enable-websocket-stream: false
-websocket-port: 80
 export-partial-blocks: false
 export-decoration-blocks: false
 export-entities: false

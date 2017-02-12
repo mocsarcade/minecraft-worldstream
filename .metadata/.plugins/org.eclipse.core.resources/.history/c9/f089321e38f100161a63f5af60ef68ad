@@ -42,7 +42,7 @@ public class WSServerPlugin extends JavaPlugin{
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
 		if (serverEnabled) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
+			Bukkit.getLogger().info("HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
 		}
