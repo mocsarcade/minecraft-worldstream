@@ -96,7 +96,6 @@ public class WSServerPlugin extends JavaPlugin{
 					Chunk c = getSendersCurrentChunk(p);
 					WSChunk wc = new WSChunk(c);
 					try {
-						getJSONWriter(worldName).open();
 						getJSONWriter(worldName).writeChunk(wc);
 						getJSONWriter(worldName).close();
 						sender.sendMessage(ChatColor.GREEN + "Complete!");

@@ -14,23 +14,12 @@ public class WSJSONWriter {
 	public WSJSONWriter(String worldName){
 		//Constructor stub - be sure to initialize stream
 		//Will need to edit filepath for each individual computer this runs on
-		world=worldName;
 		try {
-			stream = new FileOutputStream(world+".json");
-			Bukkit.getLogger().info("[DEBUG] Created JSON writer for "+stream.getFD().toString());
+			stream = new FileOutputStream(worldName+".json");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+worldName+"! Streaming will be disabled! Please correct this issue and restart your server.");
 		}
 		
-	}
-	
-	public void open(){
-		try {
-			stream = new FileOutputStream(world+".json");
-			Bukkit.getLogger().info("[DEBUG] Opened JSON writer for "+stream.getFD().toString());
-		} catch (IOException e){
-			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+worldName+"! Streaming will be disabled! Please correct this issue and restart your server.");
-		}
 	}
 	
 	public void writeBlock(WSBlock block) throws IOException{
@@ -54,7 +43,6 @@ public class WSJSONWriter {
 	public void close(){
 		try {
 			stream.close();
-			Bukkit.getLogger().info("[DEBUG] Closed JSON writer for "+stream.getFD().toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

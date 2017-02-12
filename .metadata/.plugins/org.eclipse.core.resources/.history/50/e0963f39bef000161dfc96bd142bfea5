@@ -54,7 +54,6 @@ public class WSJSONWriter {
 	public void close(){
 		try {
 			stream.close();
-			Bukkit.getLogger().info("[DEBUG] Closed JSON writer for "+stream.getFD().toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
