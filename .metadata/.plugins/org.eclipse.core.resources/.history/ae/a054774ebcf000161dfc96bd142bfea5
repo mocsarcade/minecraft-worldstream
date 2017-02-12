@@ -28,7 +28,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "TEST_PrePrototype_0.0.10";
+	public static final String VERSION = "DEV_PrePrototype_0.0.8";
 	
 	public static final int[] SOLID_SURFACE_IDS = {
 			1,2,3,4,5,7,12,13	//This covers all the most basic surfaces. Add the others after initial testing
