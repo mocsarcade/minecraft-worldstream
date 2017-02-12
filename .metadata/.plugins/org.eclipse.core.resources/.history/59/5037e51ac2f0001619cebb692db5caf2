@@ -17,7 +17,7 @@ public class WSJSONWriter {
 		world=worldName;
 		try {
 			stream = new FileOutputStream("plugins/WorldStream/"+world+".json");
-			Bukkit.getLogger().info("[DEBUG] Created JSON writer for "+world);
+			Bukkit.getLogger().info("[DEBUG] Created JSON writer for "+stream.getFD().toString());
 		} catch (IOException e){
 			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+worldName+"! Streaming will be disabled! Please correct this issue and restart your server.");
 		}
@@ -27,7 +27,7 @@ public class WSJSONWriter {
 	public void open(){
 		try {
 			stream = new FileOutputStream("plugins/WorldStream/"+world+".json");
-			Bukkit.getLogger().info("[DEBUG] Opened JSON writer for "+world);
+			Bukkit.getLogger().info("[DEBUG] Opened JSON writer for "+stream.getFD().toString());
 		} catch (IOException e){
 			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+world+"! Streaming will be disabled! Please correct this issue and restart your server.");
 		}
@@ -54,7 +54,7 @@ public class WSJSONWriter {
 	public void close(){
 		try {
 			stream.close();
-			Bukkit.getLogger().info("[DEBUG] Closed JSON writer for "+world);
+			Bukkit.getLogger().info("[DEBUG] Closed JSON writer for "+stream.getFD().toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

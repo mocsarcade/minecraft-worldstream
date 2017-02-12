@@ -82,7 +82,7 @@ public class WSChunk {
 		if (bi>=blocks.size()-1){
 			return null;
 		}
-		else return blocks.get(++bi);
+		else return blocks.get(bi++);
 	}
 	
 	public boolean hasNextBlock(){

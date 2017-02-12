@@ -6,8 +6,6 @@
 			<accessrule kind="accessible" pattern="com/sun/net/httpserver/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Derek/OneDrive/Class Work/Spring 2017/CPSC 4910/spigot-1.9-R0.1-SNAPSHOT-latest.jar"/>
-	<classpathentry kind="lib" path="C:/Users/austi/Documents/UTC/Capstone/Server/spigot-1.9-R0.1-SNAPSHOT-latest.jar"/>
 	<classpathentry kind="lib" path="A:/OneDrive/Class Work/Spring 2017/CPSC 4910/spigot-1.9-R0.1-SNAPSHOT-latest.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
