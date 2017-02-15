@@ -28,14 +28,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "TEST_PrePrototype_0.0.7";
-	
-	public static final int[] SOLID_SURFACE_IDS = {
-			1,2,3,4,5,7,12,13	//This covers all the most basic surfaces. Add the others after initial testing
-	};
-	public static final int[] NONSOLID_STRUCTURES = {
-			6,
-	};
+	public static final String VERSION = "Prototype_0.0.15";
 	
 	@Override
 	/**
@@ -46,10 +39,10 @@ public class WSServerPlugin extends JavaPlugin{
 		loadConfigValues();												//Load the config.yml settings
 		fileWriters = new HashMap<String, WSJSONWriter>();				//Initialize the file writer container
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
-		Bukkit.getLogger().info("WorldStream v"+VERSION+" enabled!");
+		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
 		if (serverEnabled) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("HTTP Server started successfully on port ");
+			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
 		}
@@ -86,7 +79,7 @@ public class WSServerPlugin extends JavaPlugin{
 			}
 			
 			if (args[0].equalsIgnoreCase("info")){
-				sender.sendMessage("WorldStream v"+VERSION);
+				sender.sendMessage("WorldStream "+VERSION);
 				sender.sendMessage("Use /ws export to export the map data!");
 			}
 			else if (args[0].equalsIgnoreCase("export")){
@@ -96,7 +89,9 @@ public class WSServerPlugin extends JavaPlugin{
 					Chunk c = getSendersCurrentChunk(p);
 					WSChunk wc = new WSChunk(c);
 					try {
+						getJSONWriter(worldName).open();
 						getJSONWriter(worldName).writeChunk(wc);
+						getJSONWriter(worldName).close();
 						sender.sendMessage(ChatColor.GREEN + "Complete!");
 						return true;
 					} catch (IOException e) {
