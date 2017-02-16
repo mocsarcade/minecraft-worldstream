@@ -28,7 +28,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype_0.0.15";
+	public static final String VERSION = "Prototype_0.1.18";
 	
 	@Override
 	/**

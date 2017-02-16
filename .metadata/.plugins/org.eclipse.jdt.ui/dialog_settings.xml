@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="A:\OneDrive\Class Work\Spring 2017\CPSC 4910" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="C:\Users\Derek\OneDrive\Class Work\Spring 2017\CPSC 4910" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="filter_imports;" key="filters_last_used"/>
 	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
 		<item value="2" key="layout"/>
@@ -36,6 +36,9 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\worldstream\WorldStream_Prototype_0.1.jar"/>
+			<item value="C:\worldstream\WorldStream_ACCT_0.0.17.jar"/>
+			<item value="C:\worldstream\WorldStream_ACCT_0.0.16.jar"/>
 			<item value="C:\worldstream\WorldStream_ACCT_0.0.15.jar"/>
 			<item value="C:\worldstream\WorldStream_ACCT_0.0.14.jar"/>
 			<item value="C:\worldstream\WorldStream_TEST_0.0.11.jar"/>

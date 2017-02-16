@@ -37,7 +37,7 @@ public class WSJSONWriter {
 		if (block.getBlockID().equals("AIR")) return; //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
 		String blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getBlockID() + 
 				"\",\n \"position\": { \"x\":\"" + block.x + "\", \"y\":\"" + block.y + "\", \"z\":\"" + block.z + 
-				+ "\"},\n },\n ]\n }\n";
+				"\"},\n },\n ]\n }\n";
 		stream.write(blockText.getBytes());
 	}
 	
