@@ -1,0 +1,9 @@
+package edu.utc.bkf926.WorldStream;
+
+import java.util.HashSet;
+
+public class WSWorld {
+
+	private HashSet<WSChunk> chunks;
+	
+}
