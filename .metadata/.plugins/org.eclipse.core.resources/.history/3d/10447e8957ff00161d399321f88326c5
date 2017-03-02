@@ -2,12 +2,15 @@ package edu.utc.bkf926.WorldStream;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +30,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype2_0.1.19";
+	public static final String VERSION = "Prototype_0.1.18";
 	
 	@Override
 	/**
@@ -37,6 +40,7 @@ public class WSServerPlugin extends JavaPlugin{
 	public void onEnable() {
 		loadConfigValues();												//Load the config.yml settings
 		fileWriters = new HashMap<String, WSJSONWriter>();				//Initialize the file writer container
+		worlds = new TreeSet<WSWorld>();
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
 		if (serverEnabled) try {
@@ -86,9 +90,10 @@ public class WSServerPlugin extends JavaPlugin{
 				if (args[1].equalsIgnoreCase("chunk")){
 					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
 					Chunk c = getSendersCurrentChunk(p);
+					WSChunk wc = new WSChunk(c);
 					try {
 						getJSONWriter(worldName).open();
-						getJSONWriter(worldName).writeChunk(c);
+						getJSONWriter(worldName).writeChunk(wc);
 						getJSONWriter(worldName).close();
 						sender.sendMessage(ChatColor.GREEN + "Complete!");
 						return true;

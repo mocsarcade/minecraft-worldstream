@@ -2,13 +2,9 @@ package edu.utc.bkf926.WorldStream;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
@@ -19,16 +15,26 @@ public class WSJSONWriter {
 	
 	public WSJSONWriter(String worldName){
 		world=worldName;
+		try {
 			Bukkit.getLogger().info("[DEBUG] Created JSON writer for "+world);
+		} catch (IOException e){
+			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+worldName+"! Streaming will be disabled! Please correct this issue and restart your server.");
+		}
 		
+	}
+	
+	public void open(){
+		try {
+			stream = new FileOutputStream("plugins/WorldStream/"+world+".json");
+			Bukkit.getLogger().info("[DEBUG] Opened JSON writer for "+world);
+		} catch (IOException e){
+			Bukkit.getLogger().severe("ERROR: Failed to access file for world "+world+"! Streaming will be disabled! Please correct this issue and restart your server.");
+		}
 	}
 	
 	public void writeBlock(Block block) throws IOException{
 		//Write a single block
 		//Creates a string to match the JSON format that Unity is expecting, then writes it to the file
-		
-		List<MetadataValue> facing = block.getMetadata("facing");
-		
 		if (block.getType().toString().equals("AIR")) return; //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
 		String blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getType().toString() + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + 
@@ -49,10 +55,17 @@ public class WSJSONWriter {
 				}
 			}
 		}
-		
-		stream.close();
 	}
 	
+	public void close(){
+		try {
+			stream.close();
+			Bukkit.getLogger().info("[DEBUG] Closed JSON writer for "+world);
+		} catch (IOException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Returns the world associated with this JSON Writer.
