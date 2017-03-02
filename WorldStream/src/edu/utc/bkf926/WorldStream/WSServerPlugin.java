@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +27,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype_0.1.18";
+	public static final String VERSION = "Prototype2_0.1.19";
 	
 	@Override
 	/**
@@ -87,10 +86,9 @@ public class WSServerPlugin extends JavaPlugin{
 				if (args[1].equalsIgnoreCase("chunk")){
 					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
 					Chunk c = getSendersCurrentChunk(p);
-					WSChunk wc = new WSChunk(c);
 					try {
 						getJSONWriter(worldName).open();
-						getJSONWriter(worldName).writeChunk(wc);
+						getJSONWriter(worldName).writeChunk(c);
 						getJSONWriter(worldName).close();
 						sender.sendMessage(ChatColor.GREEN + "Complete!");
 						return true;

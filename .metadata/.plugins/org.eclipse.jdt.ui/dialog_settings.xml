@@ -36,6 +36,7 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\worldstream\WorldStream_Prototype2_0.1.19.jar"/>
 			<item value="C:\worldstream\WorldStream_Prototype_0.1.jar"/>
 			<item value="C:\worldstream\WorldStream_ACCT_0.0.17.jar"/>
 			<item value="C:\worldstream\WorldStream_ACCT_0.0.16.jar"/>
