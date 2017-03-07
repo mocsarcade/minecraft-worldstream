@@ -41,14 +41,26 @@ public class WSJSONWriter {
 		//This is O(horrible) so remember only to call this method when someone requests it
 		
 		stream = new FileOutputStream("plugins/WorldStream/"+world+"_"+chunk.getX()+"_"+chunk.getZ()+".json");
-		
+		Block block;
+		String header = "{ \n\"blocks\" : [ \n";
+		String footer = "]\n }\n";
+		stream.write(header.getBytes());
 		for (int i=0; i<16; i++){
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
-					this.writeBlock(chunk.getBlock(i, k, j));
+					block = chunk.getBlock(i, k, j);
+					//this.writeBlock(chunk.getBlock(i, k, j));
+					//copied code from above to split the header and footer for the .json file
+					if (block.getType().toString().equals("AIR")) return; //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
+					String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
+							"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + 
+							"\"},\n },\n";
+					stream.write(blockText.getBytes());
+					//Does the same thing as the 'writeBlock()' method above, but without the header and footer ([]brackets), to make a cleaner .json file for the chunk
 				}
 			}
 		}
+		stream.write(footer.getBytes());
 		
 		stream.close();
 	}
