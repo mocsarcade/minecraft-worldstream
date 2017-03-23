@@ -1,0 +1,68 @@
+package edu.utc.bkf926.WorldStream;
+
+import com.sun.net.httpserver.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+
+public class WSHTTPEndpoint {
+	
+	static HttpServer server;
+
+	public static void startServer() throws IOException{
+		server = HttpServer.create(new InetSocketAddress(80), 0);
+
+		server.createContext("/get", new DownloadHandler());
+		
+		server.setExecutor(null);
+		server.start();
+	}
+	
+	/**
+	 * Handles world download requests
+	 * REQUEST FORMAT: [host]/get/[world]/x/z/
+	 * @author Derek
+	 *
+	 */
+	static class DownloadHandler implements HttpHandler{
+		public void handle(HttpExchange exchange){
+			InputStream in = exchange.getRequestBody();
+			OutputStream out = exchange.getResponseBody();
+			
+			String[] reqTokens = exchange.getRequestURI().toString().split("/");
+			int s = reqTokens.length;
+			int x = 0; int z = 0; String worldName = null;
+			
+			try {
+				z = Integer.parseInt(reqTokens[s-1]);
+				x = Integer.parseInt(reqTokens[s-2]);
+				worldName = reqTokens[s-3];
+				
+				File file = WSServerPlugin.getJSONFile(worldName, x, z);
+				if (file==null){
+					//TODO Return HTTP 404 - chunk or world invalid
+					return;
+				}
+				
+				
+			}
+			catch (NumberFormatException e1){
+				//TODO Return bad request or malformed URI HTTP error
+				//This catch means one of the integer values failed to parse.
+			}
+			catch (IndexOutOfBoundsException e2){
+				//TODO Return 
+			}
+			
+			//Request body should contain world name, chunk X and Z
+			//Call getJSONFile(world) to return the file or check timestamps to see if it needs to be re-exported
+			//Write resultant file to outputStream
+			//Close
+		}
+	}
+	
+}

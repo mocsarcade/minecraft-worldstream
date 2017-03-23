@@ -1,0 +1,32 @@
+package edu.utc.bkf926.WorldStream;
+
+import com.sun.net.httpserver.*;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+
+import org.bukkit.Bukkit;
+
+public class WSHTTPEndpoint {
+	
+	static HttpServer server;
+
+	public static void startServer() throws IOException{
+		server = HttpServer.create(new InetSocketAddress(80), 0);
+
+		server.createContext("/get", new DownloadHandler());
+		
+		server.setExecutor(null);
+		server.start();
+	}
+	
+	static class DownloadHandler implements HttpHandler{
+		public void handle(HttpExchange exchange){
+			InputStream in = exchange.getRequestBody();
+			FileOutputStream out = exchange.getResponseBody();
+		}
+	}
+	
+}

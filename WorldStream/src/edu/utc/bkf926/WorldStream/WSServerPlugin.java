@@ -1,5 +1,6 @@
 package edu.utc.bkf926.WorldStream;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -27,7 +28,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype2_0.1.19";
+	public static final String VERSION = "Prototype3_0.2.26";
 	
 	@Override
 	/**
@@ -44,6 +45,7 @@ public class WSServerPlugin extends JavaPlugin{
 			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
+			Bukkit.getLogger().severe(e.getStackTrace().toString());
 		}
 	}
 	
@@ -87,9 +89,7 @@ public class WSServerPlugin extends JavaPlugin{
 					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
 					Chunk c = getSendersCurrentChunk(p);
 					try {
-						getJSONWriter(worldName).open();
 						getJSONWriter(worldName).writeChunk(c);
-						getJSONWriter(worldName).close();
 						sender.sendMessage(ChatColor.GREEN + "Complete!");
 						return true;
 					} catch (IOException e) {
@@ -177,6 +177,20 @@ public class WSServerPlugin extends JavaPlugin{
 		} else {
 			return w;
 		}
+	}
+	
+	/**
+	 * Returns a JSON file containing the data for the chunk located at [x, z] in the specified world.
+	 * Returns null if the world does not exist, or that chunk has never been generated.
+	 * @param worldName
+	 * @param x
+	 * @param z
+	 * @return
+	 */
+	public static File getJSONFile(String worldName, int x, int z){
+		return null;
+		//TODO Stub for retrieving a JSON file.
+		//This method should contain the logic for checking if a file is up to date or needs a reexport.
 	}
 	
 	/*
