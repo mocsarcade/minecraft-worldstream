@@ -27,13 +27,65 @@ public class WSJSONWriter {
 		//Write a single block
 		//Creates a string to match the JSON format that Unity is expecting, then writes it to the file
 		
-		List<MetadataValue> facing = block.getMetadata("facing");
+		String blockText = "Something went wrong";
 		
-		if (block.getType().toString().equals("AIR")) return; //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
-		String blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getType().toString() + 
+		if (block.getType().toString().equals("AIR")) return;//Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
+		else if (block.getType().toString().equals("FENCE"))//If statement to check if the block is a fencef
+		{
+			
+		}
+		else if (block.getType().toString().equals("ACACIA_STAIRS") || /*If statement to check if the block is stairs.  There are several types.*/
+				block.getType().toString().equals("BIRCH_STAIRS") || 
+				block.getType().toString().equals("BRICK_STAIRS") ||
+				block.getType().toString().equals("DARK_OAK_STAIRS") ||
+				block.getType().toString().equals("JUNGLE_STAIRS") || 
+				block.getType().toString().equals("NETHER_BRICK_STAIRS") ||
+				block.getType().toString().equals("OAK_STAIRS") || 
+				block.getType().toString().equals("PURPUR_STAIRS") ||
+				block.getType().toString().equals("QUARTZ_STAIRS") ||
+				block.getType().toString().equals("RED_SANDSTONE_STAIRS") ||
+				block.getType().toString().equals("SANDSTONE_STAIRS") ||
+				block.getType().toString().equals("SPRUCE_STAIRS") ||
+				block.getType().toString().equals("STONE_BRICK_STAIRS") ||
+				block.getType().toString().equals("STONE_STAIRS"))
+		{
+			List<MetadataValue> facing = block.getMetadata("facing");//Where did the List come from?
+			List<MetadataValue> half = block.getMetadata("half");
+			List<MetadataValue> shape = block.getMetadata("shape");
+			blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getType().toString() + 
+								"\",\n \"position\": { \"x\":\"" + block.getX() + 
+								"\", \"y\":\"" + block.getY() + 
+								"\", \"z\":\"" + block.getZ() + 
+								"\"},\n },\n ]\n }\n";
+		}
+		else if (block.getType().toString().equals("FENCE") || /*Checks to see if the block is a fence.*/
+				block.getType().toString().equals("SPRUCE_FENCE") ||
+				block.getType().toString().equals("BIRCH_FENCE") ||
+				block.getType().toString().equals("JUNGLE_FENCE") ||
+				block.getType().toString().equals("ACACIA_FENCE") ||
+				block.getType().toString().equals("DARK_OAK_FENCE") ||
+				block.getType().toString().equals("NETHER_BRICK_FENCE")
+				)
+		{
+			List<MetadataValue> north = block.getMetadata("north");
+			List<MetadataValue> south = block.getMetadata("south");
+			List<MetadataValue> east = block.getMetadata("east");
+			List<MetadataValue> west = block.getMetadata("west");
+			blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getType().toString() + 
+								"\",\n \"position\": { \"x\":\"" + block.getX() + 
+								"\", \"y\":\"" + block.getY() + 
+								"\", \"z\":\"" + block.getZ() + 
+								"\"},\n },\n ]\n }\n";
+		}//Pretty much a copy of the Stairs, but need to find a way to articulate the direction the block is facing.
+		 //The wiki on Block States has it as a Boolean, with north, south, east, and west being true or false.
+		else //Block is not Air, Fence, or Stairs
+		{
+			blockText = "{ \n\"blocks\" : [ \n{ \n\"type\": \"" + block.getType().toString() + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + 
 				"\"},\n },\n ]\n }\n";
+		}
 		stream.write(blockText.getBytes());
+		
 	}
 	
 	public void writeChunk(Chunk chunk) throws IOException{
