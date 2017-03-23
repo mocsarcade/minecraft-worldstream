@@ -44,16 +44,14 @@ public class WSJSONWriter {
 		else return Category.BASIC;
 	}
 	
-	public StringBuilder writeBlock(Block block) throws IOException{
+	public void writeBlock(Block block) throws IOException{
 		//Write a single block
 		//Creates a string to match the JSON format that Unity is expecting, then writes it to the file
-		
-		StringBuilder blockContent = new StringBuilder();
 		
 		String blockText = "Something went wrong";
 		String id = block.getType().toString();
 		
-		if (id.equals("AIR")) return new StringBuilder(); //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
+		if (id.equals("AIR")) return;//Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
 		else if (getCategoryOfBlock(id).equals("STAIRS"))
 		{
 			List<MetadataValue> facing = block.getMetadata("facing");//Where did the List come from?
@@ -84,8 +82,8 @@ public class WSJSONWriter {
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + 
 				"\"},\n },\n ]\n }\n";
 		}
-		blockContent.append(blockText);
-		return blockContent;
+		stream.write(blockText.getBytes());
+		
 	}
 	
 	public StringBuilder writeChunk(Chunk chunk) throws IOException{
@@ -94,19 +92,28 @@ public class WSJSONWriter {
 		
 		//stream = new FileOutputStream("plugins/WorldStream/"+world+"_"+chunk.getX()+"_"+chunk.getZ()+".json");
 		StringBuilder content = new StringBuilder();
+		Block block;
 		String header = "{ \n\"blocks\" : [ \n";
 		String footer = "]\n }\n";
-		content.append(header);
+		content.append(header.getBytes());
 		for (int i=0; i<16; i++){
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
-					content.append(writeBlock(chunk.getBlock(i, k, j)));
+					block = chunk.getBlock(i, k, j);
+					//this.writeBlock(chunk.getBlock(i, k, j));
+					//copied code from above to split the header and footer for the .json file
+					if (block.getType().toString().equals("AIR")) return; //Filters out empty (air) blocks. TODO Add this to the block-culling code when fully implemented.
+					String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
+							"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + 
+							"\"},\n },\n";
+					stream.write(blockText.getBytes());
+					//Does the same thing as the 'writeBlock()' method above, but without the header and footer ([]brackets), to make a cleaner .json file for the chunk
 				}
 			}
 		}
-		content.append(footer);
+		stream.write(footer.getBytes());
 		
-		return content;
+		stream.close();
 	}
 	
 	
