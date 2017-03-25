@@ -107,4 +107,13 @@ public class WSJSONWriter {
 		return content;
 	}
 	
+	
+	/**
+	 * Returns the world associated with this JSON Writer.
+	 * @return
+	 */
+	public World getWorld(){
+		return Bukkit.getServer().getWorld(world);
+	}
+	
 }

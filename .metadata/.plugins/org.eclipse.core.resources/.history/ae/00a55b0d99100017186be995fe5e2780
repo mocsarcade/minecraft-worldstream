@@ -56,7 +56,7 @@ public class WSHTTPEndpoint {
 				}
 				
 				//Prepare JSON file for transit
-				byte[] fileBytes = new byte[(int)json.length()];
+				byte[] fileBytes = new byte[(int)file.length()];
 				FileInputStream in = new FileInputStream(file);
 				BufferedInputStream buffer = new BufferedInputStream(in);
 				buffer.read(fileBytes, 0, fileBytes.length);

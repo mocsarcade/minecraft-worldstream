@@ -89,7 +89,7 @@ public class WSServerPlugin extends JavaPlugin{
 					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
 					Chunk c = getSendersCurrentChunk(p);
 					try {
-						WSJSONWriter.getInstance().writeChunk(c);
+						getJSONWriter(worldName).writeChunk(c);
 						sender.sendMessage(ChatColor.GREEN + "Complete!");
 						return true;
 					} catch (IOException e) {
@@ -162,15 +162,35 @@ public class WSServerPlugin extends JavaPlugin{
 		
 	}
 	
-	public static String getJSON(String world, int x, int z) throws IOException{
-		try {
-			Chunk c = Bukkit.getServer().getWorld(world).getChunkAt(x, z);
-			return WSJSONWriter.getInstance().writeChunk(c).toString();
+	/**
+	 * Returns the JSON Writer object for a given world by name.
+	 * If no JSON Writer exists yet for that world, a new one will be initialized.
+	 * @param worldName
+	 * @return
+	 */
+	public WSJSONWriter getJSONWriter(String worldName){
+		WSJSONWriter w = fileWriters.get(worldName);
+		if (w==null){
+			WSJSONWriter nw = new WSJSONWriter(worldName);
+			fileWriters.put(worldName, nw);
+			return nw;
+		} else {
+			return w;
 		}
-		catch (NullPointerException e){
-			if (debug) Bukkit.getLogger().warning("DEBUG: NullPointerException in getJSON!");
-			return null;
-		}
+	}
+	
+	/**
+	 * Returns a JSON file containing the data for the chunk located at [x, z] in the specified world.
+	 * Returns null if the world does not exist, or that chunk has never been generated.
+	 * @param worldName
+	 * @param x
+	 * @param z
+	 * @return
+	 */
+	public static File getJSON(String worldName, int x, int z){
+		return null;
+		//TODO Stub for retrieving a JSON file.
+		//This method should contain the logic for checking if a file is up to date or needs a reexport.
 	}
 	
 	/*

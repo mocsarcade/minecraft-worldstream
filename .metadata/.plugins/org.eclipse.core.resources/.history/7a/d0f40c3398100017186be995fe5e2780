@@ -162,17 +162,6 @@ public class WSServerPlugin extends JavaPlugin{
 		
 	}
 	
-	public static String getJSON(String world, int x, int z) throws IOException{
-		try {
-			Chunk c = Bukkit.getServer().getWorld(world).getChunkAt(x, z);
-			return WSJSONWriter.getInstance().writeChunk(c).toString();
-		}
-		catch (NullPointerException e){
-			if (debug) Bukkit.getLogger().warning("DEBUG: NullPointerException in getJSON!");
-			return null;
-		}
-	}
-	
 	/*
 	 * --------BEGIN EVENT HANDLERS--------
 	 */

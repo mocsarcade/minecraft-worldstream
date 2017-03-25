@@ -15,11 +15,6 @@ import org.bukkit.Chunk;
 
 public class WSJSONWriter {
 	
-	private static WSJSONWriter instance = new WSJSONWriter();
-	public static WSJSONWriter getInstance(){
-		return instance;
-	}
-	
 	public static enum Category{
 		BASIC, STAIRS, FENCE, DOOR, ROTATING
 	}
@@ -34,7 +29,14 @@ public class WSJSONWriter {
 			"FENCE", "SPRUCE_FENCE", "BIRCH_FENCE", "JUNGLE_FENCE", "ACACIA_FENCE", "DARK_OAK_FENCE", "NETHER_BRICK_FENCE"
 	};
 	
-	public WSJSONWriter(){}
+	private String world;
+	private FileOutputStream stream;
+	
+	public WSJSONWriter(String worldName){
+		world=worldName;
+			Bukkit.getLogger().info("[DEBUG] Created JSON writer for "+world);
+		
+	}
 	
 	public static Category getCategoryOfBlock(String blockID){
 		if (Arrays.asList(STAIRS_IDS).contains(blockID)) return Category.STAIRS;
@@ -105,6 +107,15 @@ public class WSJSONWriter {
 		content.append(footer);
 		
 		return content;
+	}
+	
+	
+	/**
+	 * Returns the world associated with this JSON Writer.
+	 * @return
+	 */
+	public World getWorld(){
+		return Bukkit.getServer().getWorld(world);
 	}
 	
 }

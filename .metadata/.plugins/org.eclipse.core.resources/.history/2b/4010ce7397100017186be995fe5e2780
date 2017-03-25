@@ -46,8 +46,8 @@ public class WSHTTPEndpoint {
 				x = Integer.parseInt(reqTokens[s-2]);
 				worldName = reqTokens[s-3];
 				
-				String json = WSServerPlugin.getJSON(worldName, x, z);
-				if (json==null){
+				File file = WSServerPlugin.getJSONFile(worldName, x, z);
+				if (file==null){
 					String err = "Chunk not found! Check the spelling of the world name and try again.";
 					exchange.sendResponseHeaders(404, err.length());
 					out.write(err.getBytes());
@@ -56,7 +56,7 @@ public class WSHTTPEndpoint {
 				}
 				
 				//Prepare JSON file for transit
-				byte[] fileBytes = new byte[(int)json.length()];
+				byte[] fileBytes = new byte[(int)file.length()];
 				FileInputStream in = new FileInputStream(file);
 				BufferedInputStream buffer = new BufferedInputStream(in);
 				buffer.read(fileBytes, 0, fileBytes.length);

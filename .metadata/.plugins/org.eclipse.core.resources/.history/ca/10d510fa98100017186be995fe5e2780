@@ -162,7 +162,7 @@ public class WSServerPlugin extends JavaPlugin{
 		
 	}
 	
-	public static String getJSON(String world, int x, int z) throws IOException{
+	public String getJSON(String world, int x, int z) throws IOException{
 		try {
 			Chunk c = Bukkit.getServer().getWorld(world).getChunkAt(x, z);
 			return WSJSONWriter.getInstance().writeChunk(c).toString();
