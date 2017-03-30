@@ -1,15 +1,9 @@
 package edu.utc.bkf926.WorldStream;
 
-import com.google.common.io.Files;
 import com.sun.net.httpserver.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -55,16 +49,9 @@ public class WSHTTPEndpoint {
 					return;
 				}
 				
-				//Prepare JSON file for transit
-				byte[] fileBytes = new byte[(int)json.length()];
-				FileInputStream in = new FileInputStream(file);
-				BufferedInputStream buffer = new BufferedInputStream(in);
-				buffer.read(fileBytes, 0, fileBytes.length);
-				buffer.close();
-				
 				//Transmit file as HTTP response
-				exchange.sendResponseHeaders(200, file.length());
-				out.write(fileBytes, 0, fileBytes.length);
+				exchange.sendResponseHeaders(200, json.length());
+				out.write(json.getBytes());
 				out.close();
 			}
 			catch (NumberFormatException | IndexOutOfBoundsException e1){

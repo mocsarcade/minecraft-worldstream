@@ -1,0 +1,111 @@
+package edu.utc.bkf926.WorldStream;
+
+public class WSMetadata {
+	
+	/**
+	 * Contains blocks that are not supported by WorldStream's current version.
+	 * @data Method returns null. 
+	 */
+	public static final String[] NOT_SUPPORTED = {};
+	
+	/**
+	 * Blocks with no metadata.
+	 * @data Nothing. Method returns an empty string.
+	 */
+	public static final String[] NO_METADATA = {};
+	
+	/**
+	 * Texture or material variants, used when the same ID number/string is used for multiple types of a block.
+	 * @data String from the Minecraft API for the block variant.
+	 */
+	public static final String[] VARIANT = {};
+	
+	/**
+	 * Blocks that can be rotated on the horizontal (xz) plane, but not vertically.
+	 * @data Range 0 to 270.
+	 */
+	public static final String[] XZ_ROTATION = {};
+	
+	/**
+	 * Blocks that can be flipped on the y-axis, but not rotated.
+	 * @data Range 0 to 180.
+	 */
+	public static final String[] Y_ROTATION = {"STONE_SLAB", "WOODEN_SLAB", "STONE_SLAB2"};
+	
+	/**
+	 * Blocks that can be rotated and oriented horizontally or vertically.
+	 * @data Two integer values, one for horizontal and one for vertical rotation, both between 0 and 270.
+	 */
+	public static final String[] XYZ_ROTATION = {};
+	
+	/**
+	 * Stairs. More specifically, this is used for the shape of the stairs.
+	 * @data Straight, inner corner, or outer corner.
+	 */
+	public static final String[] STAIRS_SHAPE = {};
+	
+	/**
+	 * Objects composed of two adjoining blocks.
+	 * @data Top or bottom half.
+	 */
+	public static final String[] HALF = {};
+	
+	/**
+	 * Chests. This deals with single vs. double chests.
+	 * @data Left half, right half, or single.
+	 */
+	public static final String[] CHEST_SECTION = {};
+	
+	/**
+	 * Blocks that have stages of growth (crops).
+	 * @data Range 0 to 7. Some crops have fewer stages than others.
+	 */
+	public static final String[] GROWTH = {};
+	
+	/**
+	 * Blocks that give off light.
+	 */
+	public static final String[] LUMINANCE = {};
+	
+	public static final String[] CONNECTORS = {};
+	
+	public static final String[] OPEN = {};
+	
+	/**
+	 * The distance of a flowing liquid from its source block.
+	 */
+	public static final String[] FLOW_DISTANCE = {};
+	
+	/**
+	 * Whether or not the piston's arm is extended.
+	 */
+	public static final String[] EXTENDED = {};
+	
+	/**
+	 * Whether or not the terrain has snow on top.
+	 */
+	public static final String[] SNOW_COVERED = {};
+	
+	/**
+	 * Whether or not the crop stem has a fruit block attached to its side.
+	 */
+	public static final String[] STEM_ATTACHED = {};
+	
+	public static final String[] WALL_MOUNT = {};
+	
+	public static final String[] IRRIGATED = {};
+	
+	public static final String[] DOOR_HINGE = {};
+	
+	public static final String[] TEXT = {};
+	
+	public static final String[] ACTIVATED = {};
+	
+	public static final String[] SNOW_THICKNESS = {};
+	
+	public static final String[] FILL_LEVEL = {};
+	
+	public static final String[] DAMAGE_LEVEL = {};
+	
+	public static final String[] WIRE_SHAPE = {};
+}
