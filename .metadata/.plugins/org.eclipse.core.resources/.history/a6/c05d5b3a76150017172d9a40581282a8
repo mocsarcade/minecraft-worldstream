@@ -1,9 +1,0 @@
-package edu.utc.bkf926.WorldStream;
-
-public class WSMetadata {
-	
-	
-	
-	public static final String[] V_ROTATION = {"STONE_SLAB", "WOODEN_SLAB", "STONE_SLAB2"};
-	
-}

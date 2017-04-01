@@ -249,7 +249,7 @@ public class WSMetadata {
 	 * @param block
 	 * @return A string (with newlines) containing all metadata, or an empty string, or null if the block is unsupported.
 	 */
-	public static String writeBlockMetadata(Block block){
+	public static String getBlockMetadata(Block block){
 		String type = block.getType().toString();
 		StringBuilder data = new StringBuilder();
 		

@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin{
-	
-	static HashMap<String, WSJSONWriter> fileWriters;
 
 	static boolean debug, serverEnabled, exportOnTimer, exportChunkOnBlockUpdate;
 	static int serverPort, exportInterval;
@@ -28,7 +26,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype3_0.2.26";
+	public static final String VERSION = "0.3.27";
 	
 	@Override
 	/**
@@ -37,7 +35,6 @@ public class WSServerPlugin extends JavaPlugin{
 	 */
 	public void onEnable() {
 		loadConfigValues();												//Load the config.yml settings
-		fileWriters = new HashMap<String, WSJSONWriter>();				//Initialize the file writer container
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
 		if (serverEnabled) try {
@@ -86,17 +83,7 @@ public class WSServerPlugin extends JavaPlugin{
 			else if (args[0].equalsIgnoreCase("export")){
 				
 				if (args[1].equalsIgnoreCase("chunk")){
-					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
-					Chunk c = getSendersCurrentChunk(p);
-					try {
-						WSJSONWriter.getInstance().writeChunk(c);
-						sender.sendMessage(ChatColor.GREEN + "Complete!");
-						return true;
-					} catch (IOException e) {
-						sender.sendMessage(ChatColor.RED + "An error occurred while exporting the chunk. See the console for details.");
-						e.printStackTrace();
-						return false;
-					}
+					
 				}
 				else if (args[1].equalsIgnoreCase("loaded")){
 					
@@ -155,21 +142,6 @@ public class WSServerPlugin extends JavaPlugin{
 		} else {
 			exportOnTimer=true;
 			exportChunkOnBlockUpdate=false;
-		}
-	}
-	
-	public void exportChunk(Player p) throws IOException{
-		
-	}
-	
-	public static String getJSON(String world, int x, int z) throws IOException{
-		try {
-			Chunk c = Bukkit.getServer().getWorld(world).getChunkAt(x, z);
-			return WSJSONWriter.getInstance().writeChunk(c).toString();
-		}
-		catch (NullPointerException e){
-			if (debug) Bukkit.getLogger().warning("DEBUG: NullPointerException in getJSON!");
-			return null;
 		}
 	}
 	
