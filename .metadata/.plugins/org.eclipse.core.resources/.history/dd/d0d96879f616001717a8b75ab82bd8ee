@@ -23,7 +23,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.28";
+	public static final String VERSION = "0.3.27";
 	
 	@Override
 	/**
@@ -34,9 +34,9 @@ public class WSServerPlugin extends JavaPlugin{
 		loadConfigValues();												//Load the config.yml settings
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
-		if (config.getBoolean("http-server-enabled")) try {
+		if (serverEnabled) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port "+config.getInt("http-server-port"));
+			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
 			Bukkit.getLogger().severe(e.getStackTrace().toString());

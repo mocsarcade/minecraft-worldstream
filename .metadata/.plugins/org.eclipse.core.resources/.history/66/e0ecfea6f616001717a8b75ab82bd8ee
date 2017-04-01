@@ -17,8 +17,7 @@ public class WSHTTPEndpoint {
 	static HttpServer server;
 
 	public static void startServer() throws IOException{
-		int port = WSServerPlugin.config.getInt("http-server-port");
-		server = HttpServer.create(new InetSocketAddress(port), 0); //blaze it (not anymore)
+		server = HttpServer.create(new InetSocketAddress(8080), 0); //blaze it (not anymore)
 
 		server.createContext("/api/v1/get/", new V1GetHandler());
 		server.createContext("/api/v1/info", new V1InfoHandler());

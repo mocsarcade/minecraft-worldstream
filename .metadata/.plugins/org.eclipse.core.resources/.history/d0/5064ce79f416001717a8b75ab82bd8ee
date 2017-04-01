@@ -17,13 +17,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin{
 
-	static FileConfiguration config;
+	static boolean debug, serverEnabled, exportOnTimer, exportChunkOnBlockUpdate;
+	static int serverPort, exportInterval;
+	static boolean exportPartials, exportDeco, exportEntities, exportCoveredBlocks;
+	static ExportScope exportScope;
 	
 	static enum ExportScope{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.28";
+	public static final String VERSION = "0.3.27";
 	
 	@Override
 	/**
@@ -34,9 +37,9 @@ public class WSServerPlugin extends JavaPlugin{
 		loadConfigValues();												//Load the config.yml settings
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
-		if (config.getBoolean("http-server-enabled")) try {
+		if (serverEnabled) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port "+config.getInt("http-server-port"));
+			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
 			Bukkit.getLogger().severe(e.getStackTrace().toString());
@@ -119,7 +122,27 @@ public class WSServerPlugin extends JavaPlugin{
 	 * Loads the config.yml file and sets the boolean values accordingly.
 	 */
 	public void loadConfigValues(){
-		config = this.getConfig();
+		FileConfiguration cfg = this.getConfig();
+		debug = cfg.getBoolean("debug-mode");
+		serverEnabled = cfg.getBoolean("enable-http-server");
+		serverPort = cfg.getInt("http-server-port");
+		
+		exportPartials = cfg.getBoolean("export-partial-blocks");
+		exportDeco = cfg.getBoolean("export-decoration-blocks");
+		exportEntities = cfg.getBoolean("export-entities");
+		exportCoveredBlocks = cfg.getBoolean("export-covered-blocks");
+		
+		exportInterval = cfg.getInt("auto-export-interval");
+		if (exportInterval==0){
+			exportOnTimer=false;
+			exportChunkOnBlockUpdate=true;
+		} else if (exportInterval==-1){
+			exportOnTimer=false;
+			exportChunkOnBlockUpdate=false;
+		} else {
+			exportOnTimer=true;
+			exportChunkOnBlockUpdate=false;
+		}
 	}
 	
 	/*
