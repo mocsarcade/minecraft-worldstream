@@ -1,0 +1,54 @@
+package edu.utc.bkf926.WorldStream;
+
+import com.sun.net.httpserver.*;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+
+public class WSHTTPEndpoint {
+	
+	static HttpServer server;
+
+	public static void startServer() throws IOException{
+		server = HttpServer.create(new InetSocketAddress(420), 0); //blaze it
+
+		server.createContext("/api/v1/get/", new V1GetHandler());
+		
+		server.setExecutor(null);
+		server.start();
+	}
+	
+	/**
+	 * Handles world download requests.
+	 * REQUEST FORMAT: [host]/get/[world]/x/z/
+	 * @author Derek Elam
+	 * @throws IOException. This should only occur if the server is unable to send a response due to some configuration problem.
+	 */
+	static class V1GetHandler implements HttpHandler{
+		public void handle(HttpExchange exchange) throws IOException{
+			OutputStream out = exchange.getResponseBody();
+			
+			String[] queryValues = exchange.getRequestURI().getQuery().split("&");
+			HashMap<String, String> query = new HashMap<String, String>();
+			try {
+				for (String s : queryValues){
+					query.put(
+							s.split("=")[0],
+							s.split("=")[1]
+					);
+				}
+				
+				if (!query.containsKey("world")) throw new IndexOutOfBoundsException();
+				
+				
+			}
+			catch (IndexOutOfBoundsException e){
+				//Bad request, query failed to parse
+			}
+		}
+	}
+	
+}

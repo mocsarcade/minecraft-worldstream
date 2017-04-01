@@ -1,87 +1,115 @@
 package edu.utc.bkf926.WorldStream;
 
-import com.google.common.io.Files;
 import com.sun.net.httpserver.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
 
 public class WSHTTPEndpoint {
 	
 	static HttpServer server;
 
 	public static void startServer() throws IOException{
-		server = HttpServer.create(new InetSocketAddress(420), 0); //blaze it
+		int port = WSServerPlugin.config.getInt("http-server-port");
+		server = HttpServer.create(new InetSocketAddress(port), 0); //blaze it (not anymore)
 
-		server.createContext("/get", new DownloadHandler());
+		server.createContext("/api/v1/get/", new V1GetHandler());
+		server.createContext("/api/v1/info", new V1InfoHandler());
 		
 		server.setExecutor(null);
 		server.start();
 	}
 	
-	/**
-	 * Handles world download requests.
-	 * REQUEST FORMAT: [host]/get/[world]/x/z/
-	 * @author Derek Elam
-	 * @throws IOException. This should only occur if the server is unable to send a response due to some configuration problem.
-	 */
-	static class DownloadHandler implements HttpHandler{
+	static class V1GetHandler implements HttpHandler{
 		public void handle(HttpExchange exchange) throws IOException{
-			//InputStream in = exchange.getRequestBody();
 			OutputStream out = exchange.getResponseBody();
 			
-			String[] reqTokens = exchange.getRequestURI().toString().split("/");
-			int s = reqTokens.length;
-			int x = 0; int z = 0; String worldName = null;
-			
+			String[] queryValues = exchange.getRequestURI().getQuery().split("&");
+			HashMap<String, String> query = new HashMap<String, String>();
 			try {
-				z = Integer.parseInt(reqTokens[s-1]);
-				x = Integer.parseInt(reqTokens[s-2]);
-				worldName = reqTokens[s-3];
-				
-				File file = WSServerPlugin.getJSONFile(worldName, x, z);
-				if (file==null){
-					String err = "Chunk not found! Check the spelling of the world name and try again.";
-					exchange.sendResponseHeaders(404, err.length());
-					out.write(err.getBytes());
-					out.close();
-					return;
+				for (String s : queryValues){
+					query.put(
+							s.split("=")[0],
+							s.split("=")[1]
+					);
 				}
 				
-				//Prepare JSON file for transit
-				byte[] fileBytes = new byte[(int)file.length()];
-				FileInputStream in = new FileInputStream(file);
-				BufferedInputStream buffer = new BufferedInputStream(in);
-				buffer.read(fileBytes, 0, fileBytes.length);
-				buffer.close();
+				String resp = null;
 				
-				//Transmit file as HTTP response
-				exchange.sendResponseHeaders(200, file.length());
-				out.write(fileBytes, 0, fileBytes.length);
+				if (!query.containsKey("world")) throw new Exception("world");
+				World world = Bukkit.getServer().getWorld(query.get("world"));
+				if (world==null) throw new Exception("world404");
+				
+				if (query.size()==1){
+					resp = WSJson.getWorldJSON(world);
+				}
+				else if (query.containsKey("x") && query.containsKey("z"))
+				{
+					int x = Integer.parseInt(query.get("x"));
+					int z = Integer.parseInt(query.get("z"));
+					Chunk chunk = world.getChunkAt(x, z);
+					if (chunk==null) throw new Exception("chunk404");
+					resp = WSJson.getChunkJSON(chunk);
+				}
+				else if (query.containsKey("x1") && query.containsKey("x2")
+						&& query.containsKey("z1") && query.containsKey("z2"))
+				{
+					int x1 = Integer.parseInt(query.get("x1"));
+					int z1 = Integer.parseInt(query.get("z1"));
+					int x2 = Integer.parseInt(query.get("x2"));
+					int z2 = Integer.parseInt(query.get("z2"));
+					//TODO Finish this feature after testing for chunk-loading behavior.
+				}
+				else {
+					throw new Exception("format");
+				}
+				
+				exchange.sendResponseHeaders(200, resp.length());
+				out.write(resp.getBytes());
 				out.close();
 			}
-			catch (NumberFormatException | IndexOutOfBoundsException e1){
-				String err = "WorldStream could not understand that request. Chunk URI should be /get/[worldName]/[x]/[z] . "
-						+ "Please check the format of your URI.";
-				exchange.sendResponseHeaders(400, err.length());
-				out.write(err.getBytes());
+			catch (Exception e){
+				int err = 0; String msg = "";
+				if (e instanceof NumberFormatException || e.getMessage().equals("format")){
+					err = 400;
+					msg = "400 - WorldStream cannot understand your query. Check the format of your request URI against the HTTP API on our GitHub wiki.";
+				}
+				else if (e.getMessage().equals("world")){
+					err = 400;
+					msg = "400 - You must specify a world name in your query. If your server is single-world, try using 'world', 'world_nether', or 'world_the-end'.";
+				}
+				else if (e.getMessage().equals("world404")){
+					err = 404;
+					msg = "404 - World not found.";
+				}
+				else if (e.getMessage().equals("chunk404")){
+					err = 404;
+					msg = "404 - Chunk not found. Check your coordinates and make sure the chunk is loaded.";
+				}
+				else {
+					err = 500;
+					msg = "500 - Internal server error. Please report this to the developers so we can fix it! " + e.getStackTrace();
+				}
+				exchange.sendResponseHeaders(err, msg.length());
+				out.write(msg.getBytes());
 				out.close();
 			}
-			catch (FileNotFoundException e3){
-				
-			}
-			
-			//Request body should contain world name, chunk X and Z
-			//Call getJSONFile(world) to return the file or check timestamps to see if it needs to be re-exported
-			//Write resultant file to outputStream
-			//Close
+		}
+	}
+	
+	static class V1InfoHandler implements HttpHandler{
+		public void handle(HttpExchange exchange) throws IOException{
+			String message = "Success! This server is running WorldStream version "+WSServerPlugin.VERSION;
+			exchange.sendResponseHeaders(200, message.length());
+			exchange.getResponseBody().write(message.getBytes());
+			exchange.getResponseBody().close();
 		}
 	}
 	

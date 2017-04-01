@@ -1,0 +1,21 @@
+package edu.utc.bkf926.WorldStream;
+
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+
+public class WSJson {
+	
+	public static String getWorldJSON(World world){
+		
+	}
+	
+	public static String getChunkJSON(Chunk chunk){
+		
+	}
+
+	public static String getBlockJSON(Block block){
+		
+	}
+	
+}
