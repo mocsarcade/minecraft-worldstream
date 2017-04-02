@@ -16,19 +16,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin{
-	
-	static HashMap<String, WSJSONWriter> fileWriters;
 
-	static boolean debug, serverEnabled, exportOnTimer, exportChunkOnBlockUpdate;
-	static int serverPort, exportInterval;
-	static boolean exportPartials, exportDeco, exportEntities, exportCoveredBlocks;
-	static ExportScope exportScope;
+	static FileConfiguration config;
 	
 	static enum ExportScope{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "Prototype3_0.2.26";
+	public static final String VERSION = "0.3.28";
 	
 	@Override
 	/**
@@ -37,12 +32,11 @@ public class WSServerPlugin extends JavaPlugin{
 	 */
 	public void onEnable() {
 		loadConfigValues();												//Load the config.yml settings
-		fileWriters = new HashMap<String, WSJSONWriter>();				//Initialize the file writer container
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
-		if (serverEnabled) try {
+		if (config.getBoolean("http-server-enabled")) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port ");
+			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port "+config.getInt("http-server-port"));
 		} catch (IOException e){
 			Bukkit.getLogger().severe("Failed to start HTTP Server!");
 			Bukkit.getLogger().severe(e.getStackTrace().toString());
@@ -86,17 +80,7 @@ public class WSServerPlugin extends JavaPlugin{
 			else if (args[0].equalsIgnoreCase("export")){
 				
 				if (args[1].equalsIgnoreCase("chunk")){
-					sender.sendMessage(ChatColor.GREEN+"Exporting your current chunk...");
-					Chunk c = getSendersCurrentChunk(p);
-					try {
-						getJSONWriter(worldName).writeChunk(c);
-						sender.sendMessage(ChatColor.GREEN + "Complete!");
-						return true;
-					} catch (IOException e) {
-						sender.sendMessage(ChatColor.RED + "An error occurred while exporting the chunk. See the console for details.");
-						e.printStackTrace();
-						return false;
-					}
+					
 				}
 				else if (args[1].equalsIgnoreCase("loaded")){
 					
@@ -135,62 +119,7 @@ public class WSServerPlugin extends JavaPlugin{
 	 * Loads the config.yml file and sets the boolean values accordingly.
 	 */
 	public void loadConfigValues(){
-		FileConfiguration cfg = this.getConfig();
-		debug = cfg.getBoolean("debug-mode");
-		serverEnabled = cfg.getBoolean("enable-http-server");
-		serverPort = cfg.getInt("http-server-port");
-		
-		exportPartials = cfg.getBoolean("export-partial-blocks");
-		exportDeco = cfg.getBoolean("export-decoration-blocks");
-		exportEntities = cfg.getBoolean("export-entities");
-		exportCoveredBlocks = cfg.getBoolean("export-covered-blocks");
-		
-		exportInterval = cfg.getInt("auto-export-interval");
-		if (exportInterval==0){
-			exportOnTimer=false;
-			exportChunkOnBlockUpdate=true;
-		} else if (exportInterval==-1){
-			exportOnTimer=false;
-			exportChunkOnBlockUpdate=false;
-		} else {
-			exportOnTimer=true;
-			exportChunkOnBlockUpdate=false;
-		}
-	}
-	
-	public void exportChunk(Player p) throws IOException{
-		
-	}
-	
-	/**
-	 * Returns the JSON Writer object for a given world by name.
-	 * If no JSON Writer exists yet for that world, a new one will be initialized.
-	 * @param worldName
-	 * @return
-	 */
-	public WSJSONWriter getJSONWriter(String worldName){
-		WSJSONWriter w = fileWriters.get(worldName);
-		if (w==null){
-			WSJSONWriter nw = new WSJSONWriter(worldName);
-			fileWriters.put(worldName, nw);
-			return nw;
-		} else {
-			return w;
-		}
-	}
-	
-	/**
-	 * Returns a JSON file containing the data for the chunk located at [x, z] in the specified world.
-	 * Returns null if the world does not exist, or that chunk has never been generated.
-	 * @param worldName
-	 * @param x
-	 * @param z
-	 * @return
-	 */
-	public static File getJSONFile(String worldName, int x, int z){
-		return null;
-		//TODO Stub for retrieving a JSON file.
-		//This method should contain the logic for checking if a file is up to date or needs a reexport.
+		config = this.getConfig();
 	}
 	
 	/*

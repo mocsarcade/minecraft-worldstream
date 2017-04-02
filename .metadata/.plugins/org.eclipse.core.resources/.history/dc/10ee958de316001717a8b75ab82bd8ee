@@ -1,0 +1,11 @@
+package edu.utc.bkf926.WorldStream;
+
+import org.bukkit.block.Block;
+
+public class WSJson {
+
+	public static String getBlockJSON(Block block){
+		
+	}
+	
+}
