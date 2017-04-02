@@ -1,0 +1,9 @@
+package edu.utc.bkf926.WorldStream;
+
+public class WSWebSocketEndpoint {
+	
+	public void initWebSocket(){
+		
+	}
+	
+}

@@ -257,7 +257,8 @@ public class WSMetadata {
 		if (Arrays.asList(NO_METADATA).contains(type)) return data.toString(); //Return the empty string if there is no metadata.
 		
 		if (Arrays.asList(VARIANT).contains(type)){
-			
+			String variant = block.getState().getMetadata("variant").get(0).asString();
+			data.append("\"variant\": \""+variant+"\",\n");
 		}
 		
 		return data.toString();

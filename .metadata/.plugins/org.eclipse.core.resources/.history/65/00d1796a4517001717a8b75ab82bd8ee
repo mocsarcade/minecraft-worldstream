@@ -1,0 +1,12 @@
+package edu.utc.bkf926.WorldStream;
+
+import spark.servlet.SparkApplication;
+
+public class WSWebSocketEndpoint implements SparkApplication{
+
+	@Override
+	public void init() {
+		staticFileLocation("/public");
+	}
+	
+}

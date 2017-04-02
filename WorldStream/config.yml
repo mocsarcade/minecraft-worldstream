@@ -3,8 +3,8 @@
 
 
 http-server-enabled: true
-http-server-port: 8080
-websockets-enabled: false
+http-server-port: 80
+websockets-enabled: true
 websockets-port: 8080
 allow-batch-downloads: true
 announce-batch-downloads: true
