@@ -1,0 +1,43 @@
+package edu.utc.bkf926.WorldStream;
+
+import spark.servlet.SparkApplication;
+import static spark.Spark.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.bukkit.World;
+import org.bukkit.block.Block;
+
+import javax.websocket.Session;
+import spark.*;
+
+public class WSWebSocketEndpoint implements SparkApplication{
+	
+	static ArrayList<Session> sessions = new ArrayList<Session>();
+
+	@Override
+	public void init() {
+		int port = WSServerPlugin.config.getInt("websocket-port");
+		port(port);
+		webSocket("/api/v1/ws/", WSWebSocketHandler.class);
+	}
+	
+	public static void broadcastUpdate(World world, Block block) throws IOException{
+		String text = WSJson.getBlockJSON(block);
+		for (Session session : sessions){
+			session.getBasicRemote().sendText(text);
+		}
+	}
+	
+	//@WebSocket
+	static class WSWebSocketHandler {
+		
+		//@OnWebSocketConnect
+		public void onConnect(Session user) throws IOException {
+			
+		}
+		
+	}
+	
+}

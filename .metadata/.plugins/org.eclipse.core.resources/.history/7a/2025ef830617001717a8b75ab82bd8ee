@@ -1,0 +1,15 @@
+package edu.utc.bkf926.WorldStream;
+
+import javax.websocket.OnMessage;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
+@ServerEndpoint("/api/v1/ws/{world}")
+public class WSWebSocketEndpoint{
+	
+	@OnMessage
+	public String openConnection(String message, @PathParam("world") String world){
+		
+	}
+	
+}

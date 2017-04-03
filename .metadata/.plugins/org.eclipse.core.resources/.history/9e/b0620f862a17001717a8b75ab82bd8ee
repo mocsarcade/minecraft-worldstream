@@ -1,0 +1,40 @@
+package edu.utc.bkf926.WorldStream;
+
+import javax.websocket.EncodeException;
+import javax.websocket.Encoder;
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnMessage;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
+import org.bukkit.block.Block;
+
+@ServerEndpoint(value="/api/v1/ws/{world}")
+public class WSWebSocketEndpoint{
+	
+	@OnMessage
+	public String openConnection(String message, @PathParam("world") String world){
+		return null;
+	}
+	
+	static class BlockUpdateDecoder implements Encoder.Text<Block>{
+
+		@Override
+		public void destroy() {
+			// Do nothing
+		}
+
+		@Override
+		public void init(EndpointConfig arg0) {
+			// Do nothing
+		}
+
+		@Override
+		public String encode(Block arg0) throws EncodeException {
+			// TODO This should be where the block JSON is written.
+			return null;
+		}
+		
+	}
+	
+}
