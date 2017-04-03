@@ -7,8 +7,9 @@ import org.bukkit.block.Block;
 public class WSJson {
 	
 	public static String getWorldJSON(World world){
-		String worldHeader = "";
-		String worldFooter = "";
+		String worldHeader = "{\n\"name\": \""+world+"\",\n"+
+								"\"chunks\": [\n";
+		String worldFooter = "]\n}\n";
 		StringBuilder worldBuilder = new StringBuilder(worldHeader);
 		for (Chunk chunk : world.getLoadedChunks()){
 			worldBuilder.append(getChunkJSON(chunk));
@@ -18,8 +19,9 @@ public class WSJson {
 	}
 	
 	public static String getChunkJSON(Chunk chunk){
-		String chunkHeader = "";
-		String chunkFooter = "";
+		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
+				+ "\"blocks\" : [ \n";
+		String chunkFooter = "],\n }\n";
 		StringBuilder chunkBuilder = new StringBuilder(chunkHeader);
 		for (int i=0; i<16; i++){
 			for (int j=0; j<16; j++){
@@ -28,6 +30,7 @@ public class WSJson {
 				}
 			}
 		}
+		//TODO add "entities" to footer and a way to count them
 		chunkBuilder.append(chunkFooter);
 		return chunkBuilder.toString();
 	}
@@ -37,7 +40,6 @@ public class WSJson {
 		if (block.getType().toString().equals("AIR")) return "";
 		
 		// TODO if the block is covered, return null or empty string (culling)
-		
 		
 		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
