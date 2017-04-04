@@ -260,10 +260,6 @@ public class WSMetadata {
 		if (Arrays.asList(NO_METADATA).contains(type)) return data.toString(); //Return the empty string if there is no metadata.
 		
 		if (Arrays.asList(VARIANT).contains(type)){
-			
-			block.getState().getType().getData();
-			
-			
 			String variant = "";
 			if (state.getMetadata("variant").size() > 0){
 				variant = state.getMetadata("variant").get(0).asString();

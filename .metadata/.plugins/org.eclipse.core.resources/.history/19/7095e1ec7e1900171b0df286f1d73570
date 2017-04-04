@@ -260,17 +260,7 @@ public class WSMetadata {
 		if (Arrays.asList(NO_METADATA).contains(type)) return data.toString(); //Return the empty string if there is no metadata.
 		
 		if (Arrays.asList(VARIANT).contains(type)){
-			
-			block.getState().getType().getData();
-			
-			
-			String variant = "";
-			if (state.getMetadata("variant").size() > 0){
-				variant = state.getMetadata("variant").get(0).asString();
-			}
-			else {
-				Bukkit.getLogger().warning("[WorldStream] Metadata couldn't handle case for VARIANT: type="+type);
-			}
+			String variant = state.getMetadata("variant").get(0).asString();
 			data.append("\"variant\": \""+variant+"\",\n");
 		}
 		

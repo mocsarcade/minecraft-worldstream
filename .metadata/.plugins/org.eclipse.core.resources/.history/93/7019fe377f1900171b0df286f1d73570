@@ -94,9 +94,8 @@ public class WSHTTPEndpoint {
 				else {
 					err = 500;
 					msg = "500 - Internal server error. Please report this to the developers so we can fix it! ";
-					msg += e.getMessage() + "/";
 					for (StackTraceElement ste : e.getStackTrace()){
-						msg += ste.toString() + "/";
+						msg = msg.concat(ste.toString());
 					}
 				}
 				exchange.sendResponseHeaders(err, msg.length());
