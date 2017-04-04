@@ -21,7 +21,8 @@ public class WSJson {
 	public static String getChunkJSON(Chunk chunk){
 		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
 				+ "\"blocks\" : [ \n";
-		String chunkFooter = "],\n }\n";
+		String chunkMid = "\n], \n\"entities\": [ \n";
+		String chunkFooter = "\n]\n }\n";
 		StringBuilder chunkBuilder = new StringBuilder(chunkHeader);
 		for (int i=0; i<16; i++){
 			for (int j=0; j<16; j++){
@@ -30,7 +31,8 @@ public class WSJson {
 				}
 			}
 		}
-		//TODO add "entities" to footer and a way to count them
+		chunkBuilder.append(chunkMid);
+		chunkBuilder.append(getEntitiesJSON(chunk));
 		chunkBuilder.append(chunkFooter);
 		return chunkBuilder.toString();
 	}
@@ -46,6 +48,11 @@ public class WSJson {
 				+"\n"+WSMetadata.getBlockMetadata(block)
 				+"\n}";
 		return blockText;
+	}
+	
+	public static String getEntitiesJSON(Chunk chunk){
+		//TODO Stub method
+		return "";
 	}
 	
 }
