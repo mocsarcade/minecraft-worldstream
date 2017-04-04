@@ -42,6 +42,9 @@ public class WSJson {
 		if (block.getType().toString().equals("AIR")) return "";
 		
 		// TODO if the block is covered, return null or empty string (culling)
+		// Check if all sides are touching something, and if light is shining on them.  
+		// If completely covered and no light, then it can PROBABLY be culled.
+		// TODO Make another method for this, "isBlockSupported"?
 		
 		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
