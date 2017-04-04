@@ -6,9 +6,9 @@
 			<accessrule kind="accessible" pattern="com/sun/net/httpserver/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Derek/OneDrive/Class Work/Spring 2017/CPSC 4910/spigot-1.9-R0.1-SNAPSHOT-latest.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Derek/OneDrive/Class Work/Spring 2017/CPSC 4910/javaee-api-7.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Derek/OneDrive/Class Work/Spring 2017/CPSC 4910/spark-core-2.5.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Derek/OneDrive/Class Work/Spring 2017/CPSC 4910/websocket-server-9.4.3.v20170317.jar"/>
+	<classpathentry kind="lib" path="C:/Users/austi/Documents/UTC/Capstone/Server/spigot-1.9-R0.1-SNAPSHOT-latest.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
