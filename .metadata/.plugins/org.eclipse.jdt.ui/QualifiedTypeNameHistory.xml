@@ -25,4 +25,6 @@
 <fullyQualifiedTypeName name="org.bukkit.block.Block"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="org.bukkit.block.BlockState"/>
+<fullyQualifiedTypeName name="org.bukkit.Material"/>
 </qualifiedTypeNameHistroy>

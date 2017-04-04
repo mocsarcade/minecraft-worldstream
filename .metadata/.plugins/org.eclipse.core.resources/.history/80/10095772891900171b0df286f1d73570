@@ -262,7 +262,7 @@ public class WSMetadata {
 		if (Arrays.asList(VARIANT).contains(type)){
 			
 			block.getState().getType().getData();
-			 
+			
 			
 			String variant = "";
 			if (state.getMetadata("variant").size() > 0){
