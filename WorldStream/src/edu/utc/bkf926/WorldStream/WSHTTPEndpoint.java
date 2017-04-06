@@ -1,8 +1,6 @@
 package edu.utc.bkf926.WorldStream;
 
 import com.sun.net.httpserver.*;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -95,7 +93,11 @@ public class WSHTTPEndpoint {
 				}
 				else {
 					err = 500;
-					msg = "500 - Internal server error. Please report this to the developers so we can fix it! " + e.getStackTrace();
+					msg = "500 - Internal server error. Please report this to the developers so we can fix it! ";
+					msg += e.getMessage() + "/";
+					for (StackTraceElement ste : e.getStackTrace()){
+						msg += ste.toString() + "/";
+					}
 				}
 				exchange.sendResponseHeaders(err, msg.length());
 				out.write(msg.getBytes());

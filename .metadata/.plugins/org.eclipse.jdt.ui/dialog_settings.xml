@@ -9,6 +9,11 @@
 		<item value="1" key="rootMode"/>
 		<item value="false" key="linkWithEditor"/>
 	</section>
+	<section name="JavaBuildConfigurationBlock">
+		<item value="false" key="expanded2"/>
+		<item value="false" key="expanded1"/>
+		<item value="true" key="expanded0"/>
+	</section>
 	<section name="NewClassWizardPage">
 		<item value="false" key="create_constructor"/>
 		<item value="true" key="create_unimplemented"/>
@@ -43,6 +48,9 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="C:\worldstream\WorldStream_TEST_Alpha_0.3.31.jar"/>
+			<item value="C:\worldstream\WorldStream_TEST_Alpha_0.3.30.jar"/>
+			<item value="C:\worldstream\WorldStream_TEST_Alpha_0.3.29.jar"/>
 			<item value="C:\worldstream\WorldStream_Alpha_0.3.28.jar"/>
 			<item value="C:\worldstream\WorldStream_Prototype2_0.1.19.jar"/>
 			<item value="C:\worldstream\WorldStream_Prototype_0.1.jar"/>

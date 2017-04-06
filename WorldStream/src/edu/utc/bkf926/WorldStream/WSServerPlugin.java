@@ -1,8 +1,6 @@
 package edu.utc.bkf926.WorldStream;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,8 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin{
@@ -23,7 +19,7 @@ public class WSServerPlugin extends JavaPlugin{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.28";
+	public static final String VERSION = "0.3.35";
 	
 	@Override
 	/**
@@ -34,12 +30,22 @@ public class WSServerPlugin extends JavaPlugin{
 		loadConfigValues();												//Load the config.yml settings
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
+		
 		if (config.getBoolean("http-server-enabled")) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
-			Bukkit.getLogger().info("WorldStream HTTP Server started successfully on port "+config.getInt("http-server-port"));
+			Bukkit.getLogger().info("[WorldStream] HTTP Endpoint up and running on localhost:"+config.getInt("http-server-port"));
 		} catch (IOException e){
-			Bukkit.getLogger().severe("Failed to start HTTP Server!");
+			Bukkit.getLogger().severe("[WorldStream] HTTP Endpoint failed to start: see stacktrace");
 			Bukkit.getLogger().severe(e.getStackTrace().toString());
+		}
+		
+		if (config.getBoolean("websockets-enabled")) try {
+			WSStreamingServer.startServer();
+			Bukkit.getLogger().info("[WorldStream] WebSocket Stream up and running on localhost:"+config.getInt("websockets-port"));
+		}
+		catch (Exception e1){
+			Bukkit.getLogger().severe("[WorldStream] WebSocket Endpoint failed to start: see stacktrace");
+			Bukkit.getLogger().severe(e1.getStackTrace().toString());
 		}
 	}
 	
