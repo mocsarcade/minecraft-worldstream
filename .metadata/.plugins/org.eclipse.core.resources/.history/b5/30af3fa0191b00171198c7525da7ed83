@@ -23,7 +23,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.36";
+	public static final String VERSION = "0.3.35";
 	
 	@Override
 	/**
