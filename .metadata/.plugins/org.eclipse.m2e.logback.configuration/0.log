@@ -611,3 +611,26 @@
 2017-04-06 15:42:01,269 [Worker-6] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /WorldStream/src
 2017-04-06 15:42:01,270 [Worker-6] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Not adding source folder /WorldStream/src/test/java because it overlaps with /WorldStream/src
 2017-04-06 15:42:01,684 [Worker-6] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed: 26 sec
+2017-04-06 16:23:54,622 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:23:54,623 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:28:29,305 [Worker-17] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:28:29,305 [Worker-17] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:29:28,584 [Worker-1] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2017-04-06 16:29:45,071 [Worker-12] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:29:45,073 [Worker-12] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:34:29,156 [Worker-5] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:34:29,156 [Worker-5] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:40:43,697 [Worker-9] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:40:43,697 [Worker-9] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:42:44,420 [Worker-10] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:42:44,420 [Worker-10] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:43:48,090 [Worker-3] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:43:48,090 [Worker-3] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:44:42,693 [Worker-10] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:44:42,693 [Worker-10] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2017-04-06 16:45:06,079 [Worker-16] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:45:06,079 [Worker-16] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 16:55:36,681 [Worker-19] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 16:55:36,682 [Worker-19] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-06 17:00:13,775 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-06 17:00:13,775 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
