@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +22,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.36";
+	public static final String VERSION = "0.3.35";
 	
 	@Override
 	/**
@@ -137,12 +136,8 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	 * --------BEGIN EVENT HANDLERS--------
 	 */
 	
-	@EventHandler(priority = EventPriority.MONITOR)
-	//We use the highest event priority because we want to see the outcome of the event.
-	//If it was cancelled by a lower priority plugin, then don't broadcast anything.
-	//Otherwise autocancelling (like permissions preventing a block place) would spam messages.
+	@EventHandler
 	public void onBlockUpdate(BlockEvent evt){
-		//TODO If event is cancelled, do not broadcast.
 		WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock());
 	}
 }

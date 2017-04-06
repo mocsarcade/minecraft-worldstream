@@ -23,7 +23,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.36";
+	public static final String VERSION = "0.3.35";
 	
 	@Override
 	/**
@@ -138,11 +138,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	 */
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	//We use the highest event priority because we want to see the outcome of the event.
-	//If it was cancelled by a lower priority plugin, then don't broadcast anything.
-	//Otherwise autocancelling (like permissions preventing a block place) would spam messages.
 	public void onBlockUpdate(BlockEvent evt){
-		//TODO If event is cancelled, do not broadcast.
 		WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock());
 	}
 }
