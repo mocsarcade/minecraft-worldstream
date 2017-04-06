@@ -39,23 +39,38 @@ public class WSJson {
 
 	public static String getBlockJSON(Block block){
 		
-		if (block.getType().toString().equals("AIR")) return "";
-		
-		// TODO if the block is covered, return null or empty string (culling)
-		// Check if all sides are touching something, and if light is shining on them.  
-		// If completely covered and no light, then it can PROBABLY be culled.
-		// TODO Make another method for this, "isBlockSupported"?
-		
-		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
-				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
-				+"\n"+WSMetadata.getBlockMetadata(block)
-				+"\n}";
-		return blockText;
+		if(isSupported(block)){	
+			
+			String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
+					"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
+					+"\n"+WSMetadata.getBlockMetadata(block)
+					+"\n}";
+			return blockText;
+		}
+		else
+			return "";
 	}
 	
 	public static String getEntitiesJSON(Chunk chunk){
 		//TODO Stub method
 		return "";
+	}
+	
+	public static boolean isSupported(Block block){
+		// TODO if the block is covered, return null or empty string (culling)
+		// Check if all sides are touching something, and if light is shining on them.  
+		// If completely covered and no light, then it can PROBABLY be culled.
+		
+		//4-6-16
+		//We can use "getFace()".  What it does is it compares all sides of the block to see if it's touching whatever block you passed in.
+		//We can tell it to search for Air or Glass (or any transparent block, really), and have it return null if nothing is found.  If null, we can cull the block.
+
+		if (block.getType().toString().equals("AIR")) return false;
+		else if(block.getFace())
+		{
+			
+		}
+		else return true;
 	}
 	
 }
