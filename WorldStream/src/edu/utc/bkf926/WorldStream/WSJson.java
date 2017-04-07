@@ -53,6 +53,14 @@ public class WSJson {
 		return blockText;
 	}
 	
+	public static String getRawBlockJSON(Block block){
+		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
+				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
+				+"\n"+WSMetadata.getBlockMetadata(block)
+				+"\n}";
+		return blockText;
+	}
+	
 	public static String getEntitiesJSON(Chunk chunk){
 		//TODO Stub method
 		//We only need to support four entities - Paintings, item frames, armor stands, and ender crystals.

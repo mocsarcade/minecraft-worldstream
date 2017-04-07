@@ -37,7 +37,7 @@ public class WSStreamingServer extends WebSocketServer{
 	public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
 		Bukkit.getLogger().info("[WorldStream] WebSocket client disconnected: "+arg0.getRemoteSocketAddress().toString());
 		WSStreamingSession session = getSession(arg0);
-		WSServerPlugin.announceStream(session.getName(), session.getWorld(), true);
+		WSServerPlugin.announceStream(session.getName(), session.getWorld(), false);
 		sessions.remove(session);
 	}
 
@@ -135,7 +135,10 @@ public class WSStreamingServer extends WebSocketServer{
 		for (WSStreamingSession session : sessions){
 			if (block.getWorld().equals(session.getWorld())){
 				if (session.getChunk()==null || block.getChunk().equals(session.getChunk())){
-					session.getConnection().send(WSJson.getBlockJSON(block).getBytes());
+					String blockJson = WSJson.getRawBlockJSON(block);
+					WSServerPlugin.debug("Sending update to user "+session.getName()+": "+blockJson);
+					//session.getConnection().send("testing");
+					session.getConnection().send(blockJson);
 				}
 			}
 		}

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,7 +27,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.38";
+	public static final String VERSION = "0.3.41";
 	
 	@Override
 	/**
@@ -37,7 +38,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		loadConfigValues();												//Load the config.yml settings
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
-		
+		debug("WorldStream is running in verbose/debug mode! Expect a lot of console spam.");
 		if (config.getBoolean("http-server-enabled")) try {
 			WSHTTPEndpoint.startServer();								//Start the HTTP Server
 			Bukkit.getLogger().info("[WorldStream] HTTP Endpoint up and running on localhost:"+config.getInt("http-server-port"));
@@ -89,8 +90,21 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			}
 			
 			if (args[0].equalsIgnoreCase("info")){
-				sender.sendMessage("WorldStream "+VERSION);
-				sender.sendMessage("Use /ws export to export the map data!");
+				sender.sendMessage(ChatColor.GREEN + "WorldStream "+VERSION);
+				if (config.getBoolean("http-server-enabled")){
+					sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GREEN+"Enabled"+ChatColor.GREEN+" on port "+config.getInt("http-server-port"));
+					// TODO Show server status error if the server couldn't start
+				}
+				else {
+					sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GRAY+"Disabled");
+				}
+				if (config.getBoolean("websockets-enabled")){
+					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GREEN+"Enabled"+ChatColor.GREEN+" on port "+config.getInt("websockets-port"));
+					// TODO Show server status error if the server couldn't start
+				}
+				else {
+					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GRAY+"Disabled");
+				}
 			}
 			else if (args[0].equalsIgnoreCase("export")){
 				
@@ -150,6 +164,12 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 	}
 	
+	public static void debug(String message){
+		if (config.getBoolean("verbose-mode")){
+			Bukkit.getLogger().info("[WorldStream][DEBUG] "+message);
+		}
+	}
+	
 	/*
 	 * --------BEGIN EVENT HANDLERS--------
 	 * 
@@ -161,6 +181,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent evt){
 		if (!evt.isCancelled()){
+			debug("Block place event fired!");
 			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlockPlaced());
 		}
 	}
@@ -168,7 +189,10 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreak(BlockBreakEvent evt){
 		if (!evt.isCancelled()){
-			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock()); //TODO does this broadcast the broken block, or AIR?
+			debug("Block break event fired!");
+			Block testBlock = evt.getBlock();
+			Chunk testChunk = evt.getBlock().getChunk();
+			WSStreamingServer.getInstance().broadcastBlockChange(testChunk.getBlock(testBlock.getX(), testBlock.getY(), testBlock.getZ()));
 		}
 	}
 	
