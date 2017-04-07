@@ -27,7 +27,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.41";
+	public static final String VERSION = "0.3.42";
 	
 	@Override
 	/**
@@ -182,7 +182,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onBlockPlace(BlockPlaceEvent evt){
 		if (!evt.isCancelled()){
 			debug("Block place event fired!");
-			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlockPlaced());
+			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlockPlaced(), true);
 		}
 	}
 	
@@ -190,9 +190,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onBlockBreak(BlockBreakEvent evt){
 		if (!evt.isCancelled()){
 			debug("Block break event fired!");
-			Block testBlock = evt.getBlock();
-			Chunk testChunk = evt.getBlock().getChunk();
-			WSStreamingServer.getInstance().broadcastBlockChange(testChunk.getBlock(testBlock.getX(), testBlock.getY(), testBlock.getZ()));
+			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock(), false);
 		}
 	}
 	

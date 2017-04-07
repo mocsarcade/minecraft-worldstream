@@ -3,6 +3,7 @@ package edu.utc.bkf926.WorldStream;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 
 public class WSJson {
 	
@@ -39,7 +40,7 @@ public class WSJson {
 
 	public static String getBlockJSON(Block block){
 		
-		if (block.getType().toString().equals("AIR")) return "";
+		//if (block.getType().toString().equals("AIR")) return "";
 		
 		// TODO if the block is covered, return null or empty string (culling)
 		// Check if all sides are touching something, and if light is shining on them.  
@@ -53,17 +54,38 @@ public class WSJson {
 		return blockText;
 	}
 	
-	public static String getRawBlockJSON(Block block){
-		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
-				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
-				+"\n"+WSMetadata.getBlockMetadata(block)
-				+"\n}";
-		return blockText;
+	public static String getEventJSON(Block block, boolean placed){
+		
+		StringBuilder event = new StringBuilder("{\n");
+		if (placed){
+			event.append("\"type\": \"PLACE\",\n");
+			event.append(
+					"\"type\": \"" + block.getType().toString() + 
+					"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
+					+"\n"+WSMetadata.getBlockMetadata(block)
+					+"\n"
+					);
+		} else {
+			event.append("\"type\": \"BREAK\",\n");
+			event.append(
+					"\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
+					+"\n"
+					);
+		}
+		event.append("}");
+		return event.toString();
+		
 	}
 	
 	public static String getEntitiesJSON(Chunk chunk){
-		//TODO Stub method
-		//We only need to support four entities - Paintings, item frames, armor stands, and ender crystals.
+		StringBuilder entityBuilder = new StringBuilder();
+		for (Entity e : chunk.getEntities()){
+			entityBuilder.append(getEntityJSON(e));
+		}
+		return entityBuilder.toString();
+	}
+	
+	public static String getEntityJSON(Entity entity){
 		return "";
 	}
 	

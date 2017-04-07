@@ -131,11 +131,11 @@ public class WSStreamingServer extends WebSocketServer{
 		
 	}
 	
-	public void broadcastBlockChange(Block block){
+	public void broadcastBlockChange(Block block, boolean place){
 		for (WSStreamingSession session : sessions){
 			if (block.getWorld().equals(session.getWorld())){
 				if (session.getChunk()==null || block.getChunk().equals(session.getChunk())){
-					String blockJson = WSJson.getRawBlockJSON(block);
+					String blockJson = WSJson.getEventJSON(block, place);
 					WSServerPlugin.debug("Sending update to user "+session.getName()+": "+blockJson);
 					//session.getConnection().send("testing");
 					session.getConnection().send(blockJson);
