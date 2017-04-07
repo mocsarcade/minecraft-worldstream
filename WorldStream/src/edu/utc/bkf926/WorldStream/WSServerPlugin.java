@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin implements Listener{
@@ -23,7 +26,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.36";
+	public static final String VERSION = "0.3.38";
 	
 	@Override
 	/**
@@ -31,7 +34,6 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	 * Think of onEnable() as the "main" method of the Bukkit/Spigot plugin.
 	 */
 	public void onEnable() {
-		getServer().getPluginManager().registerEvents(this, this);		//Register this as an event listener
 		loadConfigValues();												//Load the config.yml settings
 		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
@@ -52,6 +54,8 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			Bukkit.getLogger().severe("[WorldStream] WebSocket Endpoint failed to start: see stacktrace");
 			Bukkit.getLogger().severe(e1.getStackTrace().toString());
 		}
+		
+		getServer().getPluginManager().registerEvents(this, this);		//Register this as an event listener
 	}
 	
 	@Override
@@ -133,16 +137,40 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		config = this.getConfig();
 	}
 	
+	public static void announceStream(String name, World world, boolean join){
+		if (world==null) return;
+		for (Player p : Bukkit.getOnlinePlayers()){
+			if (p.getWorld().equals(world)){
+				if (join){
+					p.sendMessage(ChatColor.GREEN + name + " started streaming this world!");
+				} else {
+					p.sendMessage(ChatColor.GOLD + name + " stopped streaming this world.");
+				}
+			}
+		}
+	}
+	
 	/*
 	 * --------BEGIN EVENT HANDLERS--------
+	 * 
+	 * 	We use the highest event priority because we want to see the outcome of the event.
+	 *	If it was cancelled by a lower priority plugin, then don't broadcast anything.
+	 *	Otherwise autocancelling (like permissions preventing a block place) would spam messages.
 	 */
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	//We use the highest event priority because we want to see the outcome of the event.
-	//If it was cancelled by a lower priority plugin, then don't broadcast anything.
-	//Otherwise autocancelling (like permissions preventing a block place) would spam messages.
-	public void onBlockUpdate(BlockEvent evt){
-		//TODO If event is cancelled, do not broadcast.
-		WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock());
+	public void onBlockPlace(BlockPlaceEvent evt){
+		if (!evt.isCancelled()){
+			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlockPlaced());
+		}
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onBlockBreak(BlockBreakEvent evt){
+		if (!evt.isCancelled()){
+			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock()); //TODO does this broadcast the broken block, or AIR?
+		}
+	}
+	
+	//TODO Do we need to handle any more events?
 }
