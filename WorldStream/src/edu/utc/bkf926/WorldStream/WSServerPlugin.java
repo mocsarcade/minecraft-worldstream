@@ -28,7 +28,9 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static String VERSION = "0.4.46";
+	public static String VERSION = "0.4.47";
+	
+	public static boolean cullingEnabled;
 	
 	@Override
 	/**
@@ -56,7 +58,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			Bukkit.getLogger().severe("[WorldStream] WebSocket Endpoint failed to start: see stacktrace");
 			Bukkit.getLogger().severe(e1.getStackTrace().toString());
 		}
-		
+		cullingEnabled = config.getBoolean("cull-covered-blocks");
 		getServer().getPluginManager().registerEvents(this, this);		//Register this as an event listener
 	}
 	
