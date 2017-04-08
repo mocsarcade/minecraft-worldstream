@@ -21,7 +21,7 @@ public class WSJson {
 	public static String getChunkJSON(Chunk chunk){
 		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
 				+ "\"blocks\" : [ \n";
-		String chunkMid = "\n], \n\"entities\": [ \n";
+		String chunkMid = "\n] \n\"entities\": [ \n";
 		String chunkFooter = "\n]\n }\n";
 		StringBuilder chunkBuilder = new StringBuilder(chunkHeader);
 		for (int i=0; i<16; i++){
@@ -53,6 +53,7 @@ public class WSJson {
 	
 	public static String getEntitiesJSON(Chunk chunk){
 		//TODO Stub method
+		//We only need to support four entities - Paintings, item frames, armor stands, and ender crystals.
 		return "";
 	}
 	
