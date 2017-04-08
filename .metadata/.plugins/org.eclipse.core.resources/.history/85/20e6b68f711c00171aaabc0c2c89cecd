@@ -42,6 +42,7 @@ public class WSJson {
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
 					chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
+					chunkBuilder.append("\n");
 				}
 			}
 		}
@@ -58,7 +59,7 @@ public class WSJson {
 		String blockText = "{ \n\"type\": \"" + getTypeString(block) + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 				+"\n"+getBlockMetadata(block)
-				+"\n},\n";
+				+"\n}";
 		return blockText;
 	}
 	
@@ -81,6 +82,7 @@ public class WSJson {
 					"\"type\": \"" + getTypeString(block) + 
 					"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 					+"\n"+getBlockMetadata(block)
+					+"\n"
 					);
 		} else {
 			event.append("\"event\": \"BREAK\",\n");
@@ -96,13 +98,11 @@ public class WSJson {
 	
 	public static boolean shouldBlockBeCulled(Block block){
 		
-		for (int i : UNSUPPORTED){
-			if (i==block.getTypeId()) return true;
-		}
+		if (Arrays.asList(UNSUPPORTED).contains(block.getTypeId())) return false;
 		
-		//TODO Add covered-block culling logic here. Return true to remove the block.
+		//TODO Add covered-block culling logic here.
 		
-		return false;
+		return true;
 		
 	}
 	

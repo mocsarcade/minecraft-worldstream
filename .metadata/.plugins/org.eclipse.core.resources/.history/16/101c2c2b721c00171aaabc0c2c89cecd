@@ -42,6 +42,7 @@ public class WSJson {
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
 					chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
+					chunkBuilder.append("\n");
 				}
 			}
 		}
@@ -58,7 +59,7 @@ public class WSJson {
 		String blockText = "{ \n\"type\": \"" + getTypeString(block) + 
 				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 				+"\n"+getBlockMetadata(block)
-				+"\n},\n";
+				+"\n}";
 		return blockText;
 	}
 	
@@ -81,6 +82,7 @@ public class WSJson {
 					"\"type\": \"" + getTypeString(block) + 
 					"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 					+"\n"+getBlockMetadata(block)
+					+"\n"
 					);
 		} else {
 			event.append("\"event\": \"BREAK\",\n");

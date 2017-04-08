@@ -81,6 +81,7 @@ public class WSJson {
 					"\"type\": \"" + getTypeString(block) + 
 					"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 					+"\n"+getBlockMetadata(block)
+					+"\n"
 					);
 		} else {
 			event.append("\"event\": \"BREAK\",\n");
