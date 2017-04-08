@@ -144,4 +144,10 @@ public class WSStreamingServer extends WebSocketServer{
 		}
 	}
 	
+	public void closeAll(){
+		for (WSStreamingSession session : sessions){
+			session.getConnection().closeConnection(0, "Server is shutting down.");
+		}
+	}
+	
 }

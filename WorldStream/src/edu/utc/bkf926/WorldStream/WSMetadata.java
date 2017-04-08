@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
+import org.bukkit.block.*;
+import org.bukkit.material.MaterialData;
 
 public class WSMetadata {
 	
@@ -251,92 +251,22 @@ public class WSMetadata {
 	 * @param block
 	 * @return A string (with newlines) containing all metadata, or an empty string, or null if the block is unsupported.
 	 */
+	@SuppressWarnings("deprecation")
 	public static String getBlockMetadata(Block block){
-		String type = block.getType().toString();
 		StringBuilder data = new StringBuilder();
-		BlockState state = block.getState();
+		String type = block.getType().toString();
 		
-		if (Arrays.asList(NOT_SUPPORTED).contains(type)) return null;
-		if (Arrays.asList(NO_METADATA).contains(type)) return data.toString(); //Return the empty string if there is no metadata.
+		if (Arrays.asList(NO_METADATA).contains(type)){
+			return "";
+		}
 		
 		if (Arrays.asList(VARIANT).contains(type)){
-			
-			block.getState().getType().getData();
-			 
-			
-			String variant = "";
-			if (state.getMetadata("variant").size() > 0){
-				variant = state.getMetadata("variant").get(0).asString();
-			}
-			else {
-				Bukkit.getLogger().warning("[WorldStream] Metadata couldn't handle case for VARIANT: type="+type);
-			}
-			data.append("\"variant\": \""+variant+"\",\n");
+			data.append("\"variant\": "+block.getData());
 		}
 		
-		if (Arrays.asList(XZ_ROTATION).contains(type)){
-			int angle=0;
-			if (state.getMetadata("facing").size() > 0){
-				String facing = state.getMetadata("facing").get(0).asString();
-				if (facing.equals("north")) angle=180;
-				else if (facing.equals("west")) angle=270;
-				else if (facing.equals("east")) angle=90;
-				else angle=0;
-			}
-			else if (state.getMetadata("rotation").size() > 0){ //Standing signs, I think.
-				angle = state.getMetadata("rotation").get(0).asInt() / 4;
-			}
-			else {
-				Bukkit.getLogger().warning("[WorldStream] Metadata couldn't handle case for XZ_ROTATION: type="+type);
-			}
-			
-			data.append("\"rotation\": {\"h\":"+angle+"}\n");
-		}
-		
-		if (Arrays.asList(Y_ROTATION).contains(type)){
-			//This one only contains slabs, so we can use the "half" attribute.
-			String half = state.getMetadata("half").get(0).asString();
-			int angle=0;
-			if (half.equals("top")) angle=180;
-			
-			data.append("\"rotation\": {\"v\":"+angle+"}\n");
-		}
-		
-		if (Arrays.asList(XYZ_ROTATION).contains(type)){
-			int h=0,v=0;
-			if (state.getMetadata("facing").size() > 0){
-				String facing = state.getMetadata("facing").get(0).asString();
-				if (facing.equals("north")) h=180;
-				else if (facing.equals("west")) h=270;
-				else if (facing.equals("east")) h=90;
-				else if (facing.equals("up")) v=90;
-				else if (facing.equals("down")) v=270;
-				//"south" is 0
-			}
-			else if (state.getMetadata("axis").size() > 0){
-				String axis = state.getMetadata("axis").get(0).asString();
-				if (axis.equals("x")) h=90;
-				else if (axis.equals("y")) v=90;
-				//"z" is north/south, which is 0
-			}
-			else {
-				Bukkit.getLogger().warning("[WorldStream] Metadata couldn't handle case for XYZ_ROTATION: type="+type);
-			}
-			
-			data.append("\"rotation\": {\"h\":"+h+", \"v\": "+v+"}\n");
-		}
-		
-		if (Arrays.asList(GROWTH).contains(type)){
-			int age=0;
-			if (state.getMetadata("age").size() > 0){
-				age = state.getMetadata("age").get(0).asInt();
-			}
-			else {
-				Bukkit.getLogger().warning("[WorldStream] Metadata couldn't handle case for GROWTH: type="+type);
-			}
-			data.append("\"growth\": "+age+",");
-		}
 		
 		return data.toString();
 	}
+	
+	
 }

@@ -1,11 +1,24 @@
 package edu.utc.bkf926.WorldStream;
 
+import java.util.Arrays;
+
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 
 public class WSJson {
+	
+	public static final int[] UNSUPPORTED = {
+			0, 90, 119, 137, 209
+	};
+	
+	//Represents block IDs that need a subtype
+	public static final int[] VARIANT = {
+			1, 3, 5, 6, 12, 17, 18, 19, 24, 31, 35, 38, 43, 44, 95, 97, 98, 125, 126, 139, 155,
+			159, 160, 161, 162, 168, 171, 175, 179
+	};
+	
 	
 	public static String getWorldJSON(World world){
 		String worldHeader = "{\n\"name\": \""+world+"\",\n"+
@@ -29,6 +42,7 @@ public class WSJson {
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
 					chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
+					chunkBuilder.append("\n");
 				}
 			}
 		}
@@ -40,41 +54,59 @@ public class WSJson {
 
 	public static String getBlockJSON(Block block){
 		
-		//if (block.getType().toString().equals("AIR")) return "";
+		if (shouldBlockBeCulled(block)) return "";
 		
-		// TODO if the block is covered, return null or empty string (culling)
-		// Check if all sides are touching something, and if light is shining on them.  
-		// If completely covered and no light, then it can PROBABLY be culled.
-		// TODO Make another method for this, "isBlockSupported"?
-		
-		String blockText = "{ \n\"type\": \"" + block.getType().toString() + 
-				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
-				+"\n"+WSMetadata.getBlockMetadata(block)
+		String blockText = "{ \n\"type\": \"" + getTypeString(block) + 
+				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+				+"\n"+getBlockMetadata(block)
 				+"\n}";
 		return blockText;
+	}
+	
+	public static String getTypeString(Block block){
+		if (Arrays.asList(VARIANT).contains(block.getTypeId())){
+			return block.getTypeId()+"_"+block.getData();
+		}
+		else {
+			return block.getTypeId()+"";
+		}
 	}
 	
 	public static String getEventJSON(Block block, boolean placed){
 		
 		StringBuilder event = new StringBuilder("{\n");
 		if (placed){
-			event.append("\"type\": \"PLACE\",\n");
+			event.append("\"event\": \"PLACE\",\n");
 			event.append(
-					"\"type\": \"" + block.getType().toString() + 
-					"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
-					+"\n"+WSMetadata.getBlockMetadata(block)
+					"\"type\": \"" + getTypeString(block) + 
+					"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+					+"\n"+getBlockMetadata(block)
 					+"\n"
 					);
 		} else {
-			event.append("\"type\": \"BREAK\",\n");
+			event.append("\"event\": \"BREAK\",\n");
 			event.append(
-					"\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"}"
+					"\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 					+"\n"
 					);
 		}
 		event.append("}");
 		return event.toString();
 		
+	}
+	
+	public static boolean shouldBlockBeCulled(Block block){
+		
+		if (Arrays.asList(UNSUPPORTED).contains(block.getTypeId())) return false;
+		
+		//TODO Add covered-block culling logic here.
+		
+		return true;
+		
+	}
+	
+	public static String getBlockMetadata(Block block){
+		return "";
 	}
 	
 	public static String getEntitiesJSON(Chunk chunk){

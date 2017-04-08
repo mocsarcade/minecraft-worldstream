@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin implements Listener{
@@ -27,7 +28,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static final String VERSION = "0.3.42";
+	public static String VERSION = "0.4.45";
 	
 	@Override
 	/**
@@ -57,6 +58,12 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 		
 		getServer().getPluginManager().registerEvents(this, this);		//Register this as an event listener
+	}
+	
+	@Override
+	public void onDisable() {
+		Bukkit.getLogger().info("[WorldStream] Shutting down - closing all open connections...");
+		WSStreamingServer.getInstance().closeAll();
 	}
 	
 	@Override
