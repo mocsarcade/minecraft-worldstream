@@ -8,7 +8,6 @@
 <fullyQualifiedTypeName name="org.bukkit.material.Stairs"/>
 <fullyQualifiedTypeName name="org.bukkit.metadata.MetadataValue"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="javax.websocket.server.PathParam"/>
 <fullyQualifiedTypeName name="javax.websocket.OnMessage"/>
 <fullyQualifiedTypeName name="javax.websocket.Encoder"/>
@@ -24,8 +23,12 @@
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="org.bukkit.Bukkit"/>
-<fullyQualifiedTypeName name="org.bukkit.World"/>
 <fullyQualifiedTypeName name="org.bukkit.Chunk"/>
 <fullyQualifiedTypeName name="org.bukkit.block.Block"/>
 <fullyQualifiedTypeName name="edu.utc.bkf926.WorldStream.WSJson"/>
+<fullyQualifiedTypeName name="org.bukkit.event.block.BlockPlaceEvent"/>
+<fullyQualifiedTypeName name="org.bukkit.event.block.BlockBreakEvent"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="org.bukkit.World"/>
+<fullyQualifiedTypeName name="edu.utc.bkf926.WorldStream.WSServerPlugin"/>
 </qualifiedTypeNameHistroy>
