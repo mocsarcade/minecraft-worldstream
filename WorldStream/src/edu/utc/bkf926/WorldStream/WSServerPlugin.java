@@ -28,7 +28,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		CHUNK, LOADED, WORLD
 	};
 	
-	public static String VERSION = "0.4.47";
+	public static String VERSION = "0.4.51";
 	
 	public static boolean cullingEnabled;
 	

@@ -4,10 +4,26 @@ import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Painting;
+import org.bukkit.material.Bed;
+import org.bukkit.material.Crops;
+import org.bukkit.material.Directional;
+import org.bukkit.material.Door;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Stairs;
+import org.bukkit.material.Step;
+import org.bukkit.material.Torch;
+import org.bukkit.material.Tree;
+import org.bukkit.material.WoodenStep;
 
 public class WSJson {
 	
@@ -165,7 +181,143 @@ public class WSJson {
 	}
 	
 	public static String getBlockMetadata(Block block){
-		return "";
+		
+		StringBuilder metadata = new StringBuilder();
+		
+		BlockState state = block.getState();
+		Material material = block.getType();
+		MaterialData data = block.getState().getData();
+		
+		//Directional blocks
+		//Far as I know, the only things using angles other than 0/90/180/270 are signs and banners.
+		if (data instanceof Directional){
+			int h=0, v=0;
+			switch (((Directional)data).getFacing()){
+			case SOUTH: break;
+			case DOWN: v=270; break;
+			case EAST: h=90; break;
+			case EAST_NORTH_EAST: h=112; break;
+			case EAST_SOUTH_EAST: h=68; break;
+			case NORTH: h=180; break;
+			case NORTH_EAST: h=135; break;
+			case NORTH_NORTH_EAST: h=158; break;
+			case NORTH_NORTH_WEST: h=202; break;
+			case NORTH_WEST: h=225; break;
+			case SELF: break;
+			case SOUTH_EAST: h=45; break;
+			case SOUTH_SOUTH_EAST: h=22; break;
+			case SOUTH_SOUTH_WEST: h=338; break;
+			case SOUTH_WEST: h=315; break;
+			case UP: v=90; break;
+			case WEST: h=270; break;
+			case WEST_NORTH_WEST: h=248; break;
+			case WEST_SOUTH_WEST: h=292; break;
+			default:break;
+			}
+			
+			metadata.append("\"rotation\": {\"h\":"+h+", \"v\":"+v+"},\n");
+		}
+		
+		//Wooden logs, because they don't implement Directional because of course they don't
+		//I'm a little salty, can you tell?
+		if (data instanceof Tree){
+			Tree tree = (Tree)data;
+			int h=0, v=0;
+			switch(tree.getDirection()){
+			case UP: case DOWN: break;
+			case NORTH: case SOUTH: v=90; break;
+			case EAST: case WEST: h=90; v=90; break;
+			default: break;
+			}
+			
+			metadata.append("\"rotation\": {\"h\":"+h+", \"v\":"+v+"},\n");
+		}
+		
+		//Slabs
+		if (data instanceof Step){
+			Step theStep = (Step)data;
+			
+			int stepRotation = theStep.isInverted() ? 180 : 0;
+			metadata.append("\"rotation\": {\"h\":"+0+", \"v\":"+stepRotation+"},\n");
+		}
+		//Because wooden slabs are special and need a different (identical) class.
+		if (data instanceof WoodenStep){
+			WoodenStep theStep = (WoodenStep)data;
+			
+			int stepRotation = theStep.isInverted() ? 180 : 0;
+			metadata.append("\"rotation\": {\"h\":"+0+", \"v\":"+stepRotation+"},\n");
+		}
+		
+		//Doors
+		if (data instanceof Door){
+			Door theDoor = (Door)data;
+			
+			String half = theDoor.isTopHalf() ? "top" : "bottom";
+			metadata.append("\"half\": \""+half+"\",\n");
+			
+			String hinge = theDoor.getHinge() ? "right" : "left"; //TODO Is this correct, or backwards?
+			metadata.append("\"hinge\": \""+hinge+"\",\n");
+			
+			if (!theDoor.isTopHalf()){ //"open" is undefined for the top half. Spigot API notes this.
+				metadata.append("\"open\": \""+theDoor.isOpen()+"\",\n");
+			}
+			
+		}
+		
+		//Beds
+		if (data instanceof Bed){
+			Bed theBed = (Bed)data;
+			
+			String half = theBed.isHeadOfBed() ? "top" : "bottom";
+			metadata.append("\"half\": \""+half+"\",\n");
+			
+		}
+		
+		//Signs
+		if (state instanceof Sign){
+			Sign sign = (Sign)state;
+			
+			metadata.append("\"text\": [");
+			for (int i=0; i<4; i++)
+				metadata.append("\""+sign.getLine(i)+"\", ");
+			
+			metadata.append("],\n");
+		}
+		
+		//Torches and redstone torches
+		if (data instanceof Torch){
+			boolean standing = ((Torch)data).getAttachedFace().equals(BlockFace.DOWN);
+			metadata.append("\"standing\": \""+standing+"\",\n");
+		}
+		
+		//Crops
+		if (data instanceof Crops){
+			int growth=0;
+			switch(((Crops)data).getState()){
+			case GERMINATED:
+				growth=1; break;
+			case MEDIUM:
+				growth=4; break;
+			case RIPE:
+				if (block.getTypeId()==59) growth=7; else growth=3; break;
+			case SEEDED:
+				growth=0; break;
+			case SMALL:
+				if (block.getTypeId()==59) growth=3; else growth=1; break;
+			case TALL:
+				if (block.getTypeId()==59) growth=5; else growth=2; break;
+			case VERY_SMALL:
+				growth=2; break;
+			case VERY_TALL:
+				growth=6; break;
+			}
+			
+			metadata.append("\"growth\": \""+growth+"\",\n");
+			
+		}
+		//Giant mushroom textures?
+		
+		return metadata.toString();
 	}
 	
 	public static String getEntitiesJSON(Chunk chunk){
@@ -177,7 +329,28 @@ public class WSJson {
 	}
 	
 	public static String getEntityJSON(Entity entity){
-		return "";
+		
+		StringBuilder info = new StringBuilder();
+		Location location = entity.getLocation();
+		
+		if (entity instanceof Painting){
+			Painting painting = (Painting)entity;
+			info.append("{\n");
+			info.append("\"type\": \"PAINTING\",\n");
+			info.append("\"position\": {\"x\":"+location.getX()+", \"y\":"+location.getY()+", \"z\":"+location.getZ()+"},\n");
+			info.append("\"rotation\": {\"h\":"+location.getYaw()+", \"v\":"+location.getPitch()+"},\n");
+			info.append("\"art\": \""+painting.getArt().toString()+"\",\n");
+		}
+		
+		if (entity instanceof ItemFrame){
+			ItemFrame frame = (ItemFrame)entity;
+			info.append("\"type\": \"ITEMFRAME\",\n");
+			info.append("\"position\": {\"x\":"+location.getX()+", \"y\":"+location.getY()+", \"z\":"+location.getZ()+"},\n");
+			info.append("\"rotation\": {\"h\":"+location.getYaw()+", \"v\":"+location.getPitch()+"},\n");
+			info.append("\"itemtype\": \""+frame.getItem().getTypeId()+"\",\n");
+		}
+		
+		return info.toString();
 	}
 	
 }
