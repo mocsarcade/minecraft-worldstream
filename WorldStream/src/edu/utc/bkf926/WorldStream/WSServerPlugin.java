@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WSServerPlugin extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.53";
+	public static String VERSION = "0.5.55";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -119,6 +119,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 				else {
 					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GRAY+"Stopped - Disabled by configuration file");
 				}
+				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("clients")){
@@ -127,11 +128,6 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 				
 			}
 			
-			
-			else {
-				sender.sendMessage("Usage: /worldstream [ info | clients]");
-				return true;
-			}
 		}
 		
 		return false; //base case
@@ -172,13 +168,13 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 	}
 	
-	public static void announceBatchDownload(boolean range){
+	public static void announceBatchDownload(boolean range, int count){
 		if (config.getBoolean("announce-batch-downloads")==false) return;
 		if (!range){
-			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting an entire world.");
+			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting an entire world ("+count+" chunks).");
 		}
 		else {
-			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting chunks.");
+			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting "+count+" chunks.");
 		}
 	}
 	

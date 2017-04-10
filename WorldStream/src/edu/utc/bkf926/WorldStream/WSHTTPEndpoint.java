@@ -55,7 +55,7 @@ public class WSHTTPEndpoint {
 				if (world==null) throw new Exception("world404");
 				
 				if (query.size()==1){
-					WSServerPlugin.announceBatchDownload(false);
+					WSServerPlugin.announceBatchDownload(false, world.getLoadedChunks().length);
 					resp = WSJson.getWorldJSON(world);
 				}
 				else if (query.containsKey("x") && query.containsKey("z"))
@@ -69,7 +69,7 @@ public class WSHTTPEndpoint {
 				else if (query.containsKey("x1") && query.containsKey("x2")
 						&& query.containsKey("z1") && query.containsKey("z2"))
 				{
-					WSServerPlugin.announceBatchDownload(true);
+					WSServerPlugin.announceBatchDownload(true, 0); //TODO Change chunk count
 					int x1 = Integer.parseInt(query.get("x1"));
 					int z1 = Integer.parseInt(query.get("z1"));
 					int x2 = Integer.parseInt(query.get("x2"));
@@ -80,6 +80,7 @@ public class WSHTTPEndpoint {
 					throw new Exception("format");
 				}
 				
+				exchange.getResponseHeaders().set("Content-Type", "application/json");
 				exchange.sendResponseHeaders(200, resp.length());
 				out.write(resp.getBytes());
 				out.close();

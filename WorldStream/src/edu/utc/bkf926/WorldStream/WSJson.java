@@ -70,7 +70,14 @@ public class WSJson {
 		for (int i=0; i<16; i++){
 			for (int j=0; j<16; j++){
 				for (int k=0; k<256; k++){
-					chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
+					try {
+						chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
+					}
+					catch (IllegalStateException e){
+						// Do nothing, leave this block out.
+						// We don't know why getTypeId() throws the "Asynchronous Entity Track" IllegalStateException, and it's not documented anywhere.
+						// So our only choice is to ignore a block that causes this error.
+					}
 				}
 			}
 		}
@@ -85,13 +92,13 @@ public class WSJson {
 		if (shouldBlockBeCulled(block)) return "";
 		
 		String blockText = "{ \n\"type\": \"" + getTypeString(block) + 
-				"\",\n \"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+				"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
 				+"\n"+getBlockMetadata(block)
 				+"\n},\n";
 		return blockText;
 	}
 	
-	public static String getTypeString(Block block){
+	public static String getTypeString(Block block) throws IllegalStateException{
 		for (int i : VARIANT){
 			if (i==block.getTypeId()){
 				WSServerPlugin.debug("Variant hit");
@@ -125,21 +132,21 @@ public class WSJson {
 	
 	public static boolean shouldBlockBeCulled(Block block){
 		
-		for (int i : UNSUPPORTED){
-			if (i==block.getTypeId()) return true;
-		}
-		
-		if (!WSServerPlugin.cullingEnabled) return false;
-		
-		/*
-		 * We check each face of the block for a solid neighbor.
-		 * If the neighbor is in the TRANSPARENT list, we can return false. We know the block will not be culled.
-		 * TRANSPARENT includes air (0).
-		 * If we get to the end, and none of the loops have returned a transparent neighbor block,
-		 * we know there is a solid block on all six sides, and therefore the block is culled.
-		 */
-		
 		try {
+		
+			for (int i : UNSUPPORTED){
+				if (i==block.getTypeId()) return true;
+			}
+			
+			if (!WSServerPlugin.cullingEnabled) return false;
+		
+			/*
+			 * We check each face of the block for a solid neighbor.
+			 * If the neighbor is in the TRANSPARENT list, we can return false. We know the block will not be culled.
+			 * TRANSPARENT includes air (0).
+			 * If we get to the end, and none of the loops have returned a transparent neighbor block,
+			 * we know there is a solid block on all six sides, and therefore the block is culled.
+			 */
 			//Top face
 			Block testBlock = block.getRelative(BlockFace.UP, 1);
 			for (int i : TRANSPARENT){
