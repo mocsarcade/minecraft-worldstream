@@ -8,4 +8,6 @@ websockets-enabled: true
 websockets-port: 8080
 allow-batch-downloads: true
 announce-batch-downloads: true
+announce-streams: true
+cull-covered-blocks: false
 verbose-mode: false

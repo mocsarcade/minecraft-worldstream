@@ -17,18 +17,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WSServerPlugin extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	
-	static enum ExportScope{
-		CHUNK, LOADED, WORLD
-	};
-	
-	public static String VERSION = "0.4.46";
+	public static String VERSION = "0.5.56";
+	public static boolean cullingEnabled;
 	
 	@Override
 	/**
@@ -36,18 +34,24 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	 * Think of onEnable() as the "main" method of the Bukkit/Spigot plugin.
 	 */
 	public void onEnable() {
-		loadConfigValues();												//Load the config.yml settings
-		this.saveDefaultConfig(); 										//Creates the initial config file - DOES NOT overwrite if it already exists
+		
+		//Load the config.yml and save an initial config file - if one already exists, this will not overwrite in.
+		loadConfigValues();
+		this.saveDefaultConfig();
+		
 		Bukkit.getLogger().info("WorldStream "+VERSION+" enabled!");
 		debug("WorldStream is running in verbose/debug mode! Expect a lot of console spam.");
+		
+		//Start the HTTP endpoint and handle any errors
 		if (config.getBoolean("http-server-enabled")) try {
-			WSHTTPEndpoint.startServer();								//Start the HTTP Server
+			WSHTTPEndpoint.startServer();
 			Bukkit.getLogger().info("[WorldStream] HTTP Endpoint up and running on localhost:"+config.getInt("http-server-port"));
 		} catch (IOException e){
 			Bukkit.getLogger().severe("[WorldStream] HTTP Endpoint failed to start: see stacktrace");
 			Bukkit.getLogger().severe(e.getStackTrace().toString());
 		}
 		
+		//Start the WebSockets server and handle any errors
 		if (config.getBoolean("websockets-enabled")) try {
 			WSStreamingServer.startServer();
 			Bukkit.getLogger().info("[WorldStream] WebSocket Stream up and running on localhost:"+config.getInt("websockets-port"));
@@ -57,7 +61,9 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			Bukkit.getLogger().severe(e1.getStackTrace().toString());
 		}
 		
-		getServer().getPluginManager().registerEvents(this, this);		//Register this as an event listener
+		//Register events with Bukkit, and set the culling mode
+		cullingEnabled = config.getBoolean("cull-covered-blocks");
+		getServer().getPluginManager().registerEvents(this, this);
 	}
 	
 	@Override
@@ -76,67 +82,72 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	 * @return          true if the command runs successfully, false otherwise.
 	 */
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (command.getName().equalsIgnoreCase("ws")){
-			Player p = null;
-			String worldName = "";
-			
-			//Get the Player that sent the command, or send an error if the sender isn't a player
-			try {
-				p = (Player)sender;
-				worldName = p.getWorld().getName();
-			} catch (ClassCastException e){
-				sender.sendMessage(ChatColor.RED + "WorldStream cannot be run from the console.");
-				return true;
-			}
+		if (command.getName().equalsIgnoreCase("worldstream")){
 			
 			//Send helpful message if there are no args
 			if (args.length==0){
 				sender.sendMessage(ChatColor.YELLOW + "This server is running WorldStream version "+VERSION);
-				sender.sendMessage("Usage: /ws [export | info | config]");
+				sender.sendMessage("Usage: /worldstream [ info | clients]");
 				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("info")){
-				sender.sendMessage(ChatColor.GREEN + "WorldStream "+VERSION);
+				sender.sendMessage(ChatColor.GREEN + "This server is running WorldStream v"+VERSION);
+				
 				if (config.getBoolean("http-server-enabled")){
-					sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GREEN+"Enabled"+ChatColor.GREEN+" on port "+config.getInt("http-server-port"));
-					// TODO Show server status error if the server couldn't start
+					if (WSHTTPEndpoint.error == null){
+						sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GREEN+"Started"+ChatColor.GREEN+" on port "+config.getInt("http-server-port"));
+					} else {
+						sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_RED+"Stopped"+ChatColor.GREEN+" - see the console for details of the error.");
+						Bukkit.getLogger().severe(WSHTTPEndpoint.error);
+					}
 				}
 				else {
-					sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GRAY+"Disabled");
+					sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GRAY+"Stopped - Disabled by configuration file");
 				}
+				
 				if (config.getBoolean("websockets-enabled")){
-					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GREEN+"Enabled"+ChatColor.GREEN+" on port "+config.getInt("websockets-port"));
-					// TODO Show server status error if the server couldn't start
+					if (WSStreamingServer.getInstance().getError()==null){
+						sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GREEN+"Started"+ChatColor.GREEN+" on port "+config.getInt("websockets-port"));
+						sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+WSStreamingServer.getInstance().getSessionCount());
+					}
+					else {
+						sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_RED+"Stopped"+ChatColor.GREEN+" - see the console for details of the error.");
+						Bukkit.getLogger().severe(WSStreamingServer.getInstance().getError());
+					}
 				}
 				else {
-					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GRAY+"Disabled");
+					sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GRAY+"Stopped - Disabled by configuration file");
 				}
-			}
-			else if (args[0].equalsIgnoreCase("export")){
-				
-				if (args[1].equalsIgnoreCase("chunk")){
-					
-				}
-				else if (args[1].equalsIgnoreCase("loaded")){
-					
-				}
-				else if (args[1].equalsIgnoreCase("world")){
-					
-				}
-				else {
-					sender.sendMessage("Usage: /ws export [chunk | loaded | world]");
-					return true;
-				}
-				
-			}
-			else if (args[0].equalsIgnoreCase("config")){
-				//TODO change some config settings via the game chat
-			}
-			else {
-				sender.sendMessage("Usage: /ws [export | info | config]");
 				return true;
 			}
+			
+			if (args[0].equalsIgnoreCase("clients")){
+				
+				int count = WSStreamingServer.getInstance().getSessionCount();
+				
+				sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+count);
+				for (WSStreamingServer.WSStreamingSession session : WSStreamingServer.getInstance().getSessions()){
+					String user = session.getName();
+					String world = session.getWorld().getName();
+					if (session.getChunk()==null){
+						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
+						);
+					}
+					else {
+						int x = session.getChunk().getX();
+						int z = session.getChunk().getZ();
+						
+						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
+								+ ChatColor.GREEN + ", Chunk: " + ChatColor.DARK_GREEN + "(" + x + ", " + z + ")"
+						);
+					}
+				}
+				return true;
+			}
+			
 		}
 		
 		return false; //base case
@@ -158,16 +169,32 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		config = this.getConfig();
 	}
 	
+	/**
+	 * Announces to all players in a world when a remote client opens or closes a stream.
+	 * @param name  Name of the remote client.
+	 * @param world Name of the world the client is streaming.
+	 * @param join  True if the stream is starting, false if it is stopping.
+	 */
 	public static void announceStream(String name, World world, boolean join){
 		if (world==null) return;
 		for (Player p : Bukkit.getOnlinePlayers()){
 			if (p.getWorld().equals(world)){
 				if (join){
-					p.sendMessage(ChatColor.GREEN + name + " started streaming this world!");
+					p.sendMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GREEN + name + " started streaming this world!");
 				} else {
-					p.sendMessage(ChatColor.GOLD + name + " stopped streaming this world.");
+					p.sendMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.YELLOW + name + " stopped streaming this world.");
 				}
 			}
+		}
+	}
+	
+	public static void announceBatchDownload(boolean range, int count){
+		if (config.getBoolean("announce-batch-downloads")==false) return;
+		if (!range){
+			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting an entire world ("+count+" chunks).");
+		}
+		else {
+			Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA+"WorldStream: " + ChatColor.GOLD + "Lag Incoming: A client is batch exporting "+count+" chunks.");
 		}
 	}
 	
@@ -177,12 +204,14 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 	}
 	
+	
+	
 	/*
 	 * --------BEGIN EVENT HANDLERS--------
 	 * 
 	 * 	We use the highest event priority because we want to see the outcome of the event.
 	 *	If it was cancelled by a lower priority plugin, then don't broadcast anything.
-	 *	Otherwise autocancelling (like permissions preventing a block place) would spam messages.
+	 *	Otherwise autocancelling (like permissions preventing a block place) would spam two messages.
 	 */
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -198,6 +227,22 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		if (!evt.isCancelled()){
 			debug("Block break event fired!");
 			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock(), false);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onEntityPlace(HangingPlaceEvent evt){
+		if (!evt.isCancelled()){
+			debug("Hanging entity place event fired!");
+			WSStreamingServer.getInstance().broadcastEntityChange(evt.getEntity(), true);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onEntityBreak(HangingBreakEvent evt){
+		if (!evt.isCancelled()){
+			debug("Hanging entity break event fired!");
+			WSStreamingServer.getInstance().broadcastEntityChange(evt.getEntity(), false);
 		}
 	}
 	
