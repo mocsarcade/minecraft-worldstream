@@ -849,3 +849,16 @@
 2017-04-10 18:48:47,879 [Worker-415] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
 2017-04-10 18:59:28,553 [Worker-423] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
 2017-04-10 18:59:28,553 [Worker-423] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-10 19:16:20,186 [Worker-430] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloading https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-deploy-plugin/2.7/maven-deploy-plugin-2.7.jar
+2017-04-10 19:16:20,271 [Worker-430] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-deploy-plugin/2.7/maven-deploy-plugin-2.7.jar
+2017-04-10 19:16:20,526 [Worker-430] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloading https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-site-plugin/3.3/maven-site-plugin-3.3.jar
+2017-04-10 19:16:20,559 [Worker-430] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-site-plugin/3.3/maven-site-plugin-3.3.jar
+2017-04-10 19:16:20,968 [Worker-430] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: edu.utc.mocsarcade:WorldStream:0.5.55 @ C:\Users\Derek\Documents\GitHub\worldstream\WorldStream\pom.xml.
+2017-04-10 19:16:21,336 [Worker-430] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-04-10 19:16:21,345 [Worker-430] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2017-04-10 19:16:21,351 [Worker-430] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-04-10 19:16:21,355 [Worker-430] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\Derek\Documents\GitHub\worldstream\WorldStream\src\test\resources
+2017-04-10 19:25:10,902 [Worker-427] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-10 19:25:10,902 [Worker-427] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install
+2017-04-10 19:34:09,752 [Worker-434] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Users\Derek\Documents\GitHub\worldstream\WorldStream
+2017-04-10 19:34:09,752 [Worker-434] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B install

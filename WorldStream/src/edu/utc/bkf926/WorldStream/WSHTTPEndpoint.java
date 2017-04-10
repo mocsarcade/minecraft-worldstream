@@ -69,12 +69,26 @@ public class WSHTTPEndpoint {
 				else if (query.containsKey("x1") && query.containsKey("x2")
 						&& query.containsKey("z1") && query.containsKey("z2"))
 				{
-					WSServerPlugin.announceBatchDownload(true, 0); //TODO Change chunk count
+					
 					int x1 = Integer.parseInt(query.get("x1"));
 					int z1 = Integer.parseInt(query.get("z1"));
 					int x2 = Integer.parseInt(query.get("x2"));
 					int z2 = Integer.parseInt(query.get("z2"));
-					//TODO Finish this loop
+
+					if (x1>x2 || z1>z2) throw new Exception("format");
+					
+					int count = ((x2-x1)+1)*((z2-z1)+1);
+					WSServerPlugin.announceBatchDownload(true, count);
+					
+					resp = "";
+					
+					for (int x=x1; x<=x2; x++){
+						for (int z=z1; z<=z2; z++){
+							resp += WSJson.getChunkJSON(world.getChunkAt(x, z));
+							resp += ",\n";
+						}
+					}
+					
 				}
 				else {
 					throw new Exception("format");

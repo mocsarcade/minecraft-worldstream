@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WSServerPlugin extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.55";
+	public static String VERSION = "0.5.56";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -124,8 +124,28 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			
 			if (args[0].equalsIgnoreCase("clients")){
 				
-				//TODO Finish this command
+				int count = WSStreamingServer.getInstance().getSessionCount();
 				
+				sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+count);
+				for (WSStreamingServer.WSStreamingSession session : WSStreamingServer.getInstance().getSessions()){
+					String user = session.getName();
+					String world = session.getWorld().getName();
+					if (session.getChunk()==null){
+						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
+						);
+					}
+					else {
+						int x = session.getChunk().getX();
+						int z = session.getChunk().getZ();
+						
+						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
+								+ ChatColor.GREEN + ", Chunk: " + ChatColor.DARK_GREEN + "(" + x + ", " + z + ")"
+						);
+					}
+				}
+				return true;
 			}
 			
 		}

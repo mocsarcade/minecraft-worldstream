@@ -45,6 +45,10 @@ public class WSStreamingServer extends WebSocketServer{
 		return sessions.size();
 	}
 	
+	public List<WSStreamingSession> getSessions(){
+		return sessions;
+	}
+	
 	public String getError(){
 		return error;
 	}
@@ -114,7 +118,7 @@ public class WSStreamingServer extends WebSocketServer{
 		return null;
 	}
 	
-	private static class WSStreamingSession{
+	public static class WSStreamingSession{
 		private WebSocket connection;
 		private String name;
 		private World world;
@@ -126,19 +130,19 @@ public class WSStreamingServer extends WebSocketServer{
 		private WebSocket getConnection() {
 			return connection;
 		}
-		private String getName() {
+		public String getName() {
 			return name;
 		}
 		private void setName(String name) {
 			this.name = name;
 		}
-		private World getWorld() {
+		public World getWorld() {
 			return world;
 		}
 		private void setWorld(World world) {
 			this.world = world;
 		}
-		private Chunk getChunk() {
+		public Chunk getChunk() {
 			return chunk;
 		}
 		private void setChunk(Chunk chunk) {
