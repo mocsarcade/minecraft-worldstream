@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -22,8 +23,14 @@ public class WSStreamingServer extends WebSocketServer{
 	
 	public static void startServer(){
 		int port = WSServerPlugin.config.getInt("websockets-port");
-		instance = new WSStreamingServer(new InetSocketAddress(port));
-		instance.start();
+		try {
+			instance = new WSStreamingServer(new InetSocketAddress(port));
+			instance.start();
+		}
+		catch (Exception e){
+			instance.error = e.getClass().toString() + ":" + e.getMessage() + ":" + e.getStackTrace().toString();
+			throw e;
+		}
 	}
 
 	public WSStreamingServer(InetSocketAddress address){
@@ -32,6 +39,15 @@ public class WSStreamingServer extends WebSocketServer{
 	}
 	
 	private List<WSStreamingSession> sessions;
+	private String error;
+	
+	public int getSessionCount(){
+		return sessions.size();
+	}
+	
+	public String getError(){
+		return error;
+	}
 
 	@Override
 	public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
@@ -140,6 +156,17 @@ public class WSStreamingServer extends WebSocketServer{
 					//session.getConnection().send("testing");
 					session.getConnection().send(blockJson);
 				}
+			}
+		}
+	}
+	
+	public void broadcastEntityChange(Entity entity, boolean place){
+		for (WSStreamingSession session : sessions){
+			if (entity.getWorld().equals(session.getWorld())){
+					String Json = WSJson.getEntityEventJSON(entity, place);
+					WSServerPlugin.debug("Sending update to user "+session.getName()+": "+Json);
+					//session.getConnection().send("testing");
+					session.getConnection().send(Json);
 			}
 		}
 	}

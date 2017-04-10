@@ -336,21 +336,42 @@ public class WSJson {
 		if (entity instanceof Painting){
 			Painting painting = (Painting)entity;
 			info.append("{\n");
+			info.append("\"id\": \""+entity.getEntityId()+"\",\n");
 			info.append("\"type\": \"PAINTING\",\n");
 			info.append("\"position\": {\"x\":"+location.getX()+", \"y\":"+location.getY()+", \"z\":"+location.getZ()+"},\n");
 			info.append("\"rotation\": {\"h\":"+location.getYaw()+", \"v\":"+location.getPitch()+"},\n");
 			info.append("\"art\": \""+painting.getArt().toString()+"\",\n");
+			info.append("},\n");
 		}
 		
 		if (entity instanceof ItemFrame){
 			ItemFrame frame = (ItemFrame)entity;
+			info.append("{\n");
+			info.append("\"id\": \""+entity.getEntityId()+"\",\n");
 			info.append("\"type\": \"ITEMFRAME\",\n");
 			info.append("\"position\": {\"x\":"+location.getX()+", \"y\":"+location.getY()+", \"z\":"+location.getZ()+"},\n");
 			info.append("\"rotation\": {\"h\":"+location.getYaw()+", \"v\":"+location.getPitch()+"},\n");
 			info.append("\"itemtype\": \""+frame.getItem().getTypeId()+"\",\n");
+			info.append("},\n");
 		}
 		
 		return info.toString();
+	}
+	
+	public static String getEntityEventJSON(Entity entity, boolean placed){
+		StringBuilder event = new StringBuilder("{\n");
+		
+		if (placed){
+			event.append("\"event\": \"ENTITY_PLACE\",\n");
+			event.append("\"entity\": \n");
+			event.append(getEntityJSON(entity));
+		}
+		else {
+			event.append("\"event\": \"ENTITY_BREAK\",\n");
+			event.append("\"id\": \""+entity.getEntityId()+"\",\n");
+		}
+		event.append("}\n");
+		return event.toString();
 	}
 	
 }

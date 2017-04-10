@@ -13,16 +13,25 @@ import org.bukkit.World;
 public class WSHTTPEndpoint {
 	
 	static HttpServer server;
+	static String error;
 
+	@SuppressWarnings("restriction")
 	public static void startServer() throws IOException{
 		int port = WSServerPlugin.config.getInt("http-server-port");
-		server = HttpServer.create(new InetSocketAddress(port), 0); //blaze it (not anymore)
+		error = null;
+		try {
+			server = HttpServer.create(new InetSocketAddress(port), 0); //blaze it (not anymore)
 
-		server.createContext("/api/v1/get/", new V1GetHandler());
-		server.createContext("/api/v1/info", new V1InfoHandler());
-		
-		server.setExecutor(null);
-		server.start();
+			server.createContext("/api/v1/get/", new V1GetHandler());
+			server.createContext("/api/v1/info", new V1InfoHandler());
+			
+			server.setExecutor(null);
+			server.start();
+		}
+		catch (Exception e){
+			error = e.getClass().toString() + ":" + e.getMessage() + ":" + e.getStackTrace().toString();
+			throw e;
+		}
 	}
 	
 	static class V1GetHandler implements HttpHandler{
@@ -46,6 +55,7 @@ public class WSHTTPEndpoint {
 				if (world==null) throw new Exception("world404");
 				
 				if (query.size()==1){
+					WSServerPlugin.announceBatchDownload(false);
 					resp = WSJson.getWorldJSON(world);
 				}
 				else if (query.containsKey("x") && query.containsKey("z"))
@@ -59,11 +69,12 @@ public class WSHTTPEndpoint {
 				else if (query.containsKey("x1") && query.containsKey("x2")
 						&& query.containsKey("z1") && query.containsKey("z2"))
 				{
+					WSServerPlugin.announceBatchDownload(true);
 					int x1 = Integer.parseInt(query.get("x1"));
 					int z1 = Integer.parseInt(query.get("z1"));
 					int x2 = Integer.parseInt(query.get("x2"));
 					int z2 = Integer.parseInt(query.get("z2"));
-					//TODO Finish this feature after testing for chunk-loading behavior.
+					//TODO Finish this loop
 				}
 				else {
 					throw new Exception("format");
