@@ -20,7 +20,7 @@ public class WSHTTPEndpoint {
 		int port = WSServerPlugin.config.getInt("http-server-port");
 		error = null;
 		try {
-			server = HttpServer.create(new InetSocketAddress(port), 0); //blaze it (not anymore)
+			server = HttpServer.create(new InetSocketAddress(port), 0);
 
 			server.createContext("/api/v1/get/", new V1GetHandler());
 			server.createContext("/api/v1/info", new V1InfoHandler());
@@ -55,6 +55,9 @@ public class WSHTTPEndpoint {
 				if (world==null) throw new Exception("world404");
 				
 				if (query.size()==1){
+					if (WSServerPlugin.config.getBoolean("allow-batch-downloads")==false){
+						throw new Exception("forbidden");
+					}
 					WSServerPlugin.announceBatchDownload(false, world.getLoadedChunks().length);
 					resp = WSJson.getWorldJSON(world);
 				}
@@ -69,6 +72,10 @@ public class WSHTTPEndpoint {
 				else if (query.containsKey("x1") && query.containsKey("x2")
 						&& query.containsKey("z1") && query.containsKey("z2"))
 				{
+				
+					if (WSServerPlugin.config.getBoolean("allow-batch-downloads")==false){
+						throw new Exception("forbidden");
+					}
 					
 					int x1 = Integer.parseInt(query.get("x1"));
 					int z1 = Integer.parseInt(query.get("z1"));
@@ -116,6 +123,10 @@ public class WSHTTPEndpoint {
 				else if (e.getMessage().equals("chunk404")){
 					err = 404;
 					msg = "404 - Chunk not found. Check your coordinates and make sure the chunk is loaded.";
+				}
+				else if (e.getMessage().equals("forbidden")){
+					err = 403;
+					msg = "403 - Forbidden: This server does not allow batch downloads. You must download one chunk at a time.";
 				}
 				else {
 					err = 500;

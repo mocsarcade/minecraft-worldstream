@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WSServerPlugin extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.56";
+	public static String VERSION = "0.5.57";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -151,15 +151,6 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 		
 		return false; //base case
-	}
-	
-	/**
-	 * Returns the current chunk that a player is in.
-	 * @param p
-	 * @return
-	 */
-	public Chunk getSendersCurrentChunk(Player p){
-		return p.getWorld().getChunkAt(p.getLocation());
 	}
 	
 	/**
