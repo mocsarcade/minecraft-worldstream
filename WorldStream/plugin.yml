@@ -2,7 +2,7 @@
 # It is NOT visible to the user and should NOT contain settings.
 
 name: WorldStream
-version: 0.5.56
+version: 0.5.57
 description: Use Minecraft as a voxel-based level editor!
 authors: [DerekElam, AustinBaird]
 main: edu.utc.bkf926.WorldStream.WSServerPlugin
