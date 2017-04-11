@@ -92,7 +92,7 @@ public class WSJson {
 		if (shouldBlockBeCulled(block)) return "";
 		
 		String blockText = "{ \n\"type\": \"" + getTypeString(block) + 
-				"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+				"\",\n\"position\": { \"x\":" + block.getX() + ", \"y\":" + block.getY() + ", \"z\":" + block.getZ() + "},"
 				+"\n"+getBlockMetadata(block)
 				+"\n},\n";
 		return blockText;
@@ -115,13 +115,13 @@ public class WSJson {
 			event.append("\"event\": \"PLACE\",\n");
 			event.append(
 					"\"type\": \"" + getTypeString(block) + 
-					"\",\n\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+					"\",\n\"position\": { \"x\":" + block.getX() + ", \"y\":" + block.getY() + ", \"z\":" + block.getZ() + "},"
 					+"\n"+getBlockMetadata(block)
 					);
 		} else {
 			event.append("\"event\": \"BREAK\",\n");
 			event.append(
-					"\"position\": { \"x\":\"" + block.getX() + "\", \"y\":\"" + block.getY() + "\", \"z\":\"" + block.getZ() + "\"},"
+					"\"position\": { \"x\":" + block.getX() + ", \"y\":" + block.getY() + ", \"z\":" + block.getZ() + "},"
 					+"\n"
 					);
 		}
