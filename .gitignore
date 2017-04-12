@@ -2,5 +2,4 @@
 .metadata/.plugins/**/*
 .recommenders/*
 RemoteSystemsTempFiles/*
-src/*
 WorldStream/target/*
