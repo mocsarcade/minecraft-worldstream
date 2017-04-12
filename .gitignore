@@ -1,6 +1,5 @@
-.metadata/
-.recommenders/
-RemoteSystemsTempFiles/
-src/
-WorldStream/.settings/
-WorldStream/target/
+.metadata/*
+.metadata/.plugins/**/*
+.recommenders/*
+RemoteSystemsTempFiles/*
+WorldStream/target/*
