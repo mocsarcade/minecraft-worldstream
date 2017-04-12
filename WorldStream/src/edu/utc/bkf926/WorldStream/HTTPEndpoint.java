@@ -10,14 +10,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-public class WSHTTPEndpoint {
+public class HTTPEndpoint {
 	
 	static HttpServer server;
 	static String error;
 
 	@SuppressWarnings("restriction")
 	public static void startServer() throws IOException{
-		int port = WSServerPlugin.config.getInt("http-server-port");
+		int port = WorldStream.config.getInt("http-server-port");
 		error = null;
 		try {
 			server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -55,11 +55,11 @@ public class WSHTTPEndpoint {
 				if (world==null) throw new Exception("world404");
 				
 				if (query.size()==1){
-					if (WSServerPlugin.config.getBoolean("allow-batch-downloads")==false){
+					if (WorldStream.config.getBoolean("allow-batch-downloads")==false){
 						throw new Exception("forbidden");
 					}
-					WSServerPlugin.announceBatchDownload(false, world.getLoadedChunks().length);
-					resp = WSJson.getWorldJSON(world);
+					WorldStream.announceBatchDownload(false, world.getLoadedChunks().length);
+					resp = JSONFactory.getWorldJSON(world);
 				}
 				else if (query.containsKey("x") && query.containsKey("z"))
 				{
@@ -67,13 +67,13 @@ public class WSHTTPEndpoint {
 					int z = Integer.parseInt(query.get("z"));
 					Chunk chunk = world.getChunkAt(x, z);
 					if (chunk==null) throw new Exception("chunk404");
-					resp = WSJson.getChunkJSON(chunk);
+					resp = JSONFactory.getChunkJSON(chunk);
 				}
 				else if (query.containsKey("x1") && query.containsKey("x2")
 						&& query.containsKey("z1") && query.containsKey("z2"))
 				{
 				
-					if (WSServerPlugin.config.getBoolean("allow-batch-downloads")==false){
+					if (WorldStream.config.getBoolean("allow-batch-downloads")==false){
 						throw new Exception("forbidden");
 					}
 					
@@ -85,13 +85,13 @@ public class WSHTTPEndpoint {
 					if (x1>x2 || z1>z2) throw new Exception("format");
 					
 					int count = ((x2-x1)+1)*((z2-z1)+1);
-					WSServerPlugin.announceBatchDownload(true, count);
+					WorldStream.announceBatchDownload(true, count);
 					
 					resp = "";
 					
 					for (int x=x1; x<=x2; x++){
 						for (int z=z1; z<=z2; z++){
-							resp += WSJson.getChunkJSON(world.getChunkAt(x, z));
+							resp += JSONFactory.getChunkJSON(world.getChunkAt(x, z));
 							resp += ",\n";
 						}
 					}
@@ -135,7 +135,7 @@ public class WSHTTPEndpoint {
 					for (StackTraceElement ste : e.getStackTrace()){
 						msg += ste.toString() + "\n";
 					}
-					WSServerPlugin.logException(e, false);
+					WorldStream.logException(e, false);
 				}
 				exchange.sendResponseHeaders(err, msg.length());
 				out.write(msg.getBytes());
@@ -146,7 +146,7 @@ public class WSHTTPEndpoint {
 	
 	static class V1InfoHandler implements HttpHandler{
 		public void handle(HttpExchange exchange) throws IOException{
-			String message = "Success! This server is running WorldStream version "+WSServerPlugin.VERSION;
+			String message = "Success! This server is running WorldStream version "+WorldStream.VERSION;
 			exchange.sendResponseHeaders(200, message.length());
 			exchange.getResponseBody().write(message.getBytes());
 			exchange.getResponseBody().close();

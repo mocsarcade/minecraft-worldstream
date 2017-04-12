@@ -14,17 +14,17 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-public class WSStreamingServer extends WebSocketServer{
+public class WebSocketEndpoint extends WebSocketServer{
 	
-	private static WSStreamingServer instance;
-	public static WSStreamingServer getInstance(){
+	private static WebSocketEndpoint instance;
+	public static WebSocketEndpoint getInstance(){
 		return instance;
 	}
 	
 	public static void startServer(){
-		int port = WSServerPlugin.config.getInt("websockets-port");
+		int port = WorldStream.config.getInt("websockets-port");
 		try {
-			instance = new WSStreamingServer(new InetSocketAddress(port));
+			instance = new WebSocketEndpoint(new InetSocketAddress(port));
 			instance.start();
 		}
 		catch (Exception e){
@@ -33,7 +33,7 @@ public class WSStreamingServer extends WebSocketServer{
 		}
 	}
 
-	public WSStreamingServer(InetSocketAddress address){
+	public WebSocketEndpoint(InetSocketAddress address){
 		super(address);
 		sessions = new ArrayList<WSStreamingSession>();
 	}
@@ -57,7 +57,7 @@ public class WSStreamingServer extends WebSocketServer{
 	public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
 		Bukkit.getLogger().info("[WorldStream] WebSocket client disconnected: "+arg0.getRemoteSocketAddress().toString());
 		WSStreamingSession session = getSession(arg0);
-		WSServerPlugin.announceStream(session.getName(), session.getWorld(), false);
+		WorldStream.announceStream(session.getName(), session.getWorld(), false);
 		sessions.remove(session);
 	}
 
@@ -72,7 +72,7 @@ public class WSStreamingServer extends WebSocketServer{
 		String[] parameters = arg1.split(",");
 		HashMap<String, String> msgValues = new HashMap<String, String>();
 		WSStreamingSession session = getSession(arg0);
-		WSServerPlugin.announceStream(session.getName(), session.getWorld(), false);
+		WorldStream.announceStream(session.getName(), session.getWorld(), false);
 		
 		try {
 			for (String s : parameters){
@@ -93,15 +93,15 @@ public class WSStreamingServer extends WebSocketServer{
 				if (session.getChunk()==null) throw new Exception("chunk");
 			}
 			
-			WSServerPlugin.announceStream(session.getName(), session.getWorld(), true);
+			WorldStream.announceStream(session.getName(), session.getWorld(), true);
 			arg0.send("SUCCESS: Your session parameters have been updated.");
 		}
 		catch (NumberFormatException | IndexOutOfBoundsException e){
 			arg0.send("ERROR: WorldStream cannot parse your request. Please check the WebSockets API and make sure your request is formatted correctly.");
 		}
 		catch (NullPointerException e){
-			WSServerPlugin.debug("Encountered Null Session!");
-			WSServerPlugin.logException(e, false);
+			WorldStream.debug("Encountered Null Session!");
+			WorldStream.logException(e, false);
 		}
 		catch (Exception e){
 			if (e.getMessage().equals("world")){
@@ -116,7 +116,7 @@ public class WSStreamingServer extends WebSocketServer{
 	@Override
 	public void onOpen(WebSocket arg0, ClientHandshake arg1) {
 		Bukkit.getLogger().info("[WorldStream] WebSocket client connected from "+arg0.getRemoteSocketAddress().toString());
-		arg0.send("WorldStream Version "+WSServerPlugin.VERSION+": Stream opened successfully.");
+		arg0.send("WorldStream Version "+WorldStream.VERSION+": Stream opened successfully.");
 		arg0.send("Please specify world and chunk(s) to stream; you will not receive any updates until you do so!");
 		WSStreamingSession session = new WSStreamingSession(arg0);
 		sessions.add(session);
@@ -166,8 +166,8 @@ public class WSStreamingServer extends WebSocketServer{
 		for (WSStreamingSession session : sessions){
 			if (block.getWorld().equals(session.getWorld())){
 				if (session.getChunk()==null || block.getChunk().equals(session.getChunk())){
-					String blockJson = WSJson.getEventJSON(block, place);
-					WSServerPlugin.debug("Sending update to user "+session.getName()+": "+blockJson);
+					String blockJson = JSONFactory.getEventJSON(block, place);
+					WorldStream.debug("Sending update to user "+session.getName()+": "+blockJson);
 					//session.getConnection().send("testing");
 					session.getConnection().send(blockJson);
 				}
@@ -178,8 +178,8 @@ public class WSStreamingServer extends WebSocketServer{
 	public void broadcastEntityChange(Entity entity, boolean place){
 		for (WSStreamingSession session : sessions){
 			if (entity.getWorld().equals(session.getWorld())){
-					String Json = WSJson.getEntityEventJSON(entity, place);
-					WSServerPlugin.debug("Sending update to user "+session.getName()+": "+Json);
+					String Json = JSONFactory.getEntityEventJSON(entity, place);
+					WorldStream.debug("Sending update to user "+session.getName()+": "+Json);
 					//session.getConnection().send("testing");
 					session.getConnection().send(Json);
 			}

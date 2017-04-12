@@ -25,7 +25,7 @@ import org.bukkit.material.Torch;
 import org.bukkit.material.Tree;
 import org.bukkit.material.WoodenStep;
 
-public class WSJson {
+public class JSONFactory {
 	
 	public static final int[] UNSUPPORTED = {
 			0, 90, 119, 137, 176, 177, 209, 210, 211
@@ -74,7 +74,7 @@ public class WSJson {
 						chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
 					}
 					catch (IllegalStateException e){
-						WSServerPlugin.logException(e, false);
+						WorldStream.logException(e, false);
 						// Do nothing, leave this block out.
 						// We don't know why getTypeId() throws the "Asynchronous Entity Track" IllegalStateException, and it's not documented anywhere.
 						// So our only choice is to ignore a block that causes this error.
@@ -102,7 +102,7 @@ public class WSJson {
 	public static String getTypeString(Block block) throws IllegalStateException{
 		for (int i : VARIANT){
 			if (i==block.getTypeId()){
-				WSServerPlugin.debug("Variant hit");
+				WorldStream.debug("Variant hit");
 				return block.getTypeId()+"_"+block.getData();
 			}
 		}
@@ -139,7 +139,7 @@ public class WSJson {
 				if (i==block.getTypeId()) return true;
 			}
 			
-			if (!WSServerPlugin.cullingEnabled) return false;
+			if (!WorldStream.cullingEnabled) return false;
 		
 			/*
 			 * We check each face of the block for a solid neighbor.
@@ -182,7 +182,7 @@ public class WSJson {
 			return true;
 		}
 		catch (Exception e){
-			WSServerPlugin.debug(e.getClass().toString()+" in culling: x="+block.getX()+" y="+block.getY()+" z="+block.getZ()+". Defaulting to false.");
+			WorldStream.debug(e.getClass().toString()+" in culling: x="+block.getX()+" y="+block.getY()+" z="+block.getZ()+". Defaulting to false.");
 			return false;
 		}
 		

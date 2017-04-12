@@ -22,7 +22,6 @@ INDEX VERSION 1.129+C:\Users\Derek\Documents\GitHub\worldstream\.metadata\.plugi
 166776846.index
 680429552.index
 934501009.index
-1403152992.index
 2652778527.index
 3080698043.index
 631010536.index

@@ -22,10 +22,10 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class WSServerPlugin extends JavaPlugin implements Listener{
+public class WorldStream extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.58";
+	public static String VERSION = "0.5.59";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -44,7 +44,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		
 		//Start the HTTP endpoint and handle any errors
 		if (config.getBoolean("http-server-enabled")) try {
-			WSHTTPEndpoint.startServer();
+			HTTPEndpoint.startServer();
 			Bukkit.getLogger().info("[WorldStream] HTTP Endpoint up and running on localhost:"+config.getInt("http-server-port"));
 		} catch (IOException e){
 			Bukkit.getLogger().severe("[WorldStream] HTTP Endpoint failed to start: see stacktrace");
@@ -53,7 +53,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		
 		//Start the WebSockets server and handle any errors
 		if (config.getBoolean("websockets-enabled")) try {
-			WSStreamingServer.startServer();
+			WebSocketEndpoint.startServer();
 			Bukkit.getLogger().info("[WorldStream] WebSocket Stream up and running on localhost:"+config.getInt("websockets-port"));
 		}
 		catch (Exception e1){
@@ -69,7 +69,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	@Override
 	public void onDisable() {
 		Bukkit.getLogger().info("[WorldStream] Shutting down - closing all open connections...");
-		WSStreamingServer.getInstance().closeAll();
+		WebSocketEndpoint.getInstance().closeAll();
 	}
 	
 	@Override
@@ -95,11 +95,11 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 				sender.sendMessage(ChatColor.GREEN + "This server is running WorldStream v"+VERSION);
 				
 				if (config.getBoolean("http-server-enabled")){
-					if (WSHTTPEndpoint.error == null){
+					if (HTTPEndpoint.error == null){
 						sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_GREEN+"Started"+ChatColor.GREEN+" on port "+config.getInt("http-server-port"));
 					} else {
 						sender.sendMessage(ChatColor.GREEN + "HTTP Server: "+ChatColor.DARK_RED+"Stopped"+ChatColor.GREEN+" - see the console for details of the error.");
-						Bukkit.getLogger().severe(WSHTTPEndpoint.error);
+						Bukkit.getLogger().severe(HTTPEndpoint.error);
 					}
 				}
 				else {
@@ -107,13 +107,13 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 				}
 				
 				if (config.getBoolean("websockets-enabled")){
-					if (WSStreamingServer.getInstance().getError()==null){
+					if (WebSocketEndpoint.getInstance().getError()==null){
 						sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_GREEN+"Started"+ChatColor.GREEN+" on port "+config.getInt("websockets-port"));
-						sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+WSStreamingServer.getInstance().getSessionCount());
+						sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+WebSocketEndpoint.getInstance().getSessionCount());
 					}
 					else {
 						sender.sendMessage(ChatColor.GREEN + "Streaming Server: "+ChatColor.DARK_RED+"Stopped"+ChatColor.GREEN+" - see the console for details of the error.");
-						Bukkit.getLogger().severe(WSStreamingServer.getInstance().getError());
+						Bukkit.getLogger().severe(WebSocketEndpoint.getInstance().getError());
 					}
 				}
 				else {
@@ -124,10 +124,10 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			
 			if (args[0].equalsIgnoreCase("clients")){
 				
-				int count = WSStreamingServer.getInstance().getSessionCount();
+				int count = WebSocketEndpoint.getInstance().getSessionCount();
 				
 				sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+count);
-				for (WSStreamingServer.WSStreamingSession session : WSStreamingServer.getInstance().getSessions()){
+				for (WebSocketEndpoint.WSStreamingSession session : WebSocketEndpoint.getInstance().getSessions()){
 					String user = session.getName();
 					String world = session.getWorld().getName();
 					if (session.getChunk()==null){
@@ -221,7 +221,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onBlockPlace(BlockPlaceEvent evt){
 		if (!evt.isCancelled()){
 			debug("Block place event fired!");
-			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlockPlaced(), true);
+			WebSocketEndpoint.getInstance().broadcastBlockChange(evt.getBlockPlaced(), true);
 		}
 	}
 	
@@ -229,7 +229,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onBlockBreak(BlockBreakEvent evt){
 		if (!evt.isCancelled()){
 			debug("Block break event fired!");
-			WSStreamingServer.getInstance().broadcastBlockChange(evt.getBlock(), false);
+			WebSocketEndpoint.getInstance().broadcastBlockChange(evt.getBlock(), false);
 		}
 	}
 	
@@ -237,7 +237,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onEntityPlace(HangingPlaceEvent evt){
 		if (!evt.isCancelled()){
 			debug("Hanging entity place event fired!");
-			WSStreamingServer.getInstance().broadcastEntityChange(evt.getEntity(), true);
+			WebSocketEndpoint.getInstance().broadcastEntityChange(evt.getEntity(), true);
 		}
 	}
 	
@@ -245,7 +245,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 	public void onEntityBreak(HangingBreakEvent evt){
 		if (!evt.isCancelled()){
 			debug("Hanging entity break event fired!");
-			WSStreamingServer.getInstance().broadcastEntityChange(evt.getEntity(), false);
+			WebSocketEndpoint.getInstance().broadcastEntityChange(evt.getEntity(), false);
 		}
 	}
 	
