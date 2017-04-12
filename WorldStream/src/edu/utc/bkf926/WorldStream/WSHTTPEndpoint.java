@@ -133,8 +133,9 @@ public class WSHTTPEndpoint {
 					msg = "500 - Internal server error. Please report this to the developers so we can fix it! ";
 					msg += e.getMessage() + "/";
 					for (StackTraceElement ste : e.getStackTrace()){
-						msg += ste.toString() + "/";
+						msg += ste.toString() + "\n";
 					}
+					WSServerPlugin.logException(e, false);
 				}
 				exchange.sendResponseHeaders(err, msg.length());
 				out.write(msg.getBytes());

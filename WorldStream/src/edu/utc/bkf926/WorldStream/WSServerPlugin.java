@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WSServerPlugin extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.57";
+	public static String VERSION = "0.5.58";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -48,7 +48,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 			Bukkit.getLogger().info("[WorldStream] HTTP Endpoint up and running on localhost:"+config.getInt("http-server-port"));
 		} catch (IOException e){
 			Bukkit.getLogger().severe("[WorldStream] HTTP Endpoint failed to start: see stacktrace");
-			Bukkit.getLogger().severe(e.getStackTrace().toString());
+			logException(e, true);
 		}
 		
 		//Start the WebSockets server and handle any errors
@@ -58,7 +58,7 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 		catch (Exception e1){
 			Bukkit.getLogger().severe("[WorldStream] WebSocket Endpoint failed to start: see stacktrace");
-			Bukkit.getLogger().severe(e1.getStackTrace().toString());
+			logException(e1, true);
 		}
 		
 		//Register events with Bukkit, and set the culling mode
@@ -195,7 +195,19 @@ public class WSServerPlugin extends JavaPlugin implements Listener{
 		}
 	}
 	
-	
+	/**
+	 * Prints an exception to the Bukkit console.
+	 * @param e       The exception.
+	 * @param severe  True if the exception is plugin-breaking. If false, it will only be logged while in debug mode.
+	 */
+	public static void logException(Exception e, boolean severe){
+		if (severe || config.getBoolean("verbose-mode")){
+			Bukkit.getLogger().severe(e.getClass().toString()+" : "+e.getMessage());
+			for (StackTraceElement s : e.getStackTrace()){
+				Bukkit.getLogger().severe(s.toString());
+			}
+		}
+	}
 	
 	/*
 	 * --------BEGIN EVENT HANDLERS--------

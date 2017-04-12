@@ -84,21 +84,32 @@ public class WSStreamingServer extends WebSocketServer{
 			}
 			if (msgValues.containsKey("world")){
 				session.setWorld(Bukkit.getServer().getWorld(msgValues.get("world")));
-				
+				if (session.getWorld()==null) throw new Exception("world");
 			}
 			if (msgValues.containsKey("x") && msgValues.containsKey("z")){
 				int x = Integer.parseInt(msgValues.get("x"));
 				int z = Integer.parseInt(msgValues.get("z"));
 				session.setChunk(session.getWorld().getChunkAt(x, z));
+				if (session.getChunk()==null) throw new Exception("chunk");
 			}
 			
 			WSServerPlugin.announceStream(session.getName(), session.getWorld(), true);
+			arg0.send("SUCCESS: Your session parameters have been updated.");
 		}
 		catch (NumberFormatException | IndexOutOfBoundsException e){
 			arg0.send("ERROR: WorldStream cannot parse your request. Please check the WebSockets API and make sure your request is formatted correctly.");
 		}
 		catch (NullPointerException e){
-			Bukkit.getLogger().warning("[WorldStream] Encountered Null Session!");
+			WSServerPlugin.debug("Encountered Null Session!");
+			WSServerPlugin.logException(e, false);
+		}
+		catch (Exception e){
+			if (e.getMessage().equals("world")){
+				arg0.send("ERROR: World not found. Please send another setup message to correct this error; you will not receive updates until you do.");
+			}
+			else {
+				arg0.send("ERROR: Chunk not found. Is it loaded? Please send another setup message to correct this error; you will not receive updates until you do.");
+			}
 		}
 	}
 

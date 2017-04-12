@@ -74,6 +74,7 @@ public class WSJson {
 						chunkBuilder.append(getBlockJSON(chunk.getBlock(i, k, j)));
 					}
 					catch (IllegalStateException e){
+						WSServerPlugin.logException(e, false);
 						// Do nothing, leave this block out.
 						// We don't know why getTypeId() throws the "Asynchronous Entity Track" IllegalStateException, and it's not documented anywhere.
 						// So our only choice is to ignore a block that causes this error.
