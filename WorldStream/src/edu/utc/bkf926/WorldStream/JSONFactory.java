@@ -64,7 +64,7 @@ public class JSONFactory {
 	public static String getChunkJSON(Chunk chunk){
 		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
 				+ "\"blocks\" : [ \n";
-		String chunkMid = "\n] \n\"entities\": [ \n";
+		String chunkMid = "\n], \n\"entities\": [ \n";
 		String chunkFooter = "\n]\n }\n";
 		StringBuilder chunkBuilder = new StringBuilder(chunkHeader);
 		for (int i=0; i<16; i++){
