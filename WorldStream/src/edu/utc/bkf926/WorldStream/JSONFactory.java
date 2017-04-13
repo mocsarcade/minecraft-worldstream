@@ -1,8 +1,5 @@
 package edu.utc.bkf926.WorldStream;
 
-import java.util.Arrays;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,7 +16,6 @@ import org.bukkit.material.Crops;
 import org.bukkit.material.Directional;
 import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
 import org.bukkit.material.Step;
 import org.bukkit.material.Torch;
 import org.bukkit.material.Tree;
@@ -62,9 +58,9 @@ public class JSONFactory {
 	}
 	
 	public static String getChunkJSON(Chunk chunk){
-		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
+		String chunkHeader = "{ \n\"position\": {\"cx\":"+chunk.getX()+", \"cz\":"+chunk.getZ()+"},\n"
 				+ "\"blocks\" : [ \n";
-		String chunkMid = "\n] \n\"entities\": [ \n";
+		String chunkMid = "\n], \n\"entities\": [ \n";
 		String chunkFooter = "\n]\n }\n";
 		StringBuilder chunkBuilder = new StringBuilder(chunkHeader);
 		for (int i=0; i<16; i++){
