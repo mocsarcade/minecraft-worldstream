@@ -1,8 +1,0 @@
-# WorldStream settings file.
-# DO NOT use tabs or single quotes in this file! YAML hates these and the plugin will crash!
-
-
-http-server-enabled: true
-http-server-port: 8080
-websockets-enabled: false
-websockets-port: 8080
