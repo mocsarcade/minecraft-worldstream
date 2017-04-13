@@ -3,3 +3,5 @@
 .recommenders/*
 RemoteSystemsTempFiles/*
 WorldStream/target/*
+WorldStream/bin/*
+WorldStream/.settings/*
