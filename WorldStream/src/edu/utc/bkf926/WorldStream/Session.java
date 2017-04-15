@@ -15,6 +15,7 @@ public class Session {
 	private WebSocket connection;
 	private World world;
 	private List<Chunk> watchlist;
+	private boolean watchAll;
 	
 	public Session(WebSocket socket){
 		connection = socket;
@@ -56,10 +57,19 @@ public class Session {
 	}
 	
 	public boolean isWatching(Chunk chunk){
-		return watchlist.contains(chunk);
+		return (watchAll || watchlist.contains(chunk));
+	}
+	
+	public void setWatchFullWorld(boolean w){
+		watchAll = w;
+	}
+	
+	public void reset(){
+		watchlist.clear();
+		watchAll = false;
 	}
 	
 	public void close(){
-		connection.closeConnection(0, "Connection closed by server.");
+		connection.closeConnection(0, "> DISCONNECTED: Connection closed by server.");
 	}
 }

@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WorldStream extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.59";
+	public static String VERSION = "0.5.60";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -123,28 +123,16 @@ public class WorldStream extends JavaPlugin implements Listener{
 				int count = WebSocketEndpoint.getInstance().getSessionCount();
 				
 				sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+count);
-				for (WebSocketEndpoint.WSStreamingSession session : WebSocketEndpoint.getInstance().getSessions()){
-					String user = session.getName();
+				for (Session session : WebSocketEndpoint.getInstance().getSessions()){
+					String user = session.getUsername();
 					String world = session.getWorld().getName();
-					if (session.getChunk()==null){
-						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+					sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
 								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
-						);
-					}
-					else {
-						int x = session.getChunk().getX();
-						int z = session.getChunk().getZ();
-						
-						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
-								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
-								+ ChatColor.GREEN + ", Chunk: " + ChatColor.DARK_GREEN + "(" + x + ", " + z + ")"
 						);
 					}
 				}
 				return true;
 			}
-			
-		}
 		
 		return false; //base case
 	}

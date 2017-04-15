@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.utc.mocsarcade</groupId>
   <artifactId>WorldStream</artifactId>
-  <version>0.5.59</version>
+  <version>0.5.60</version>
   <name>WorldStream</name>
   <description>Use Minecraft as a real-time collaborative level editor!</description>
   <build>
