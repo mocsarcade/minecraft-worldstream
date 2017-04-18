@@ -137,6 +137,21 @@ public class WebSocketEndpoint extends WebSocketServer{
 				}
 			}
 			
+			else if (cmd.equalsIgnoreCase("status")){
+				session.send("> SESSION STATUS");
+				session.send("> Username: "+session.getUsername());
+				session.send("> World: "+session.getWorld().getName());
+				if (session.isWatchingWorld()){
+					session.send("> Watchlist: Entire world");
+				}
+				else {
+					session.send("> Watchlist: "+session.getChunkWatchlist().size()+" chunks:");
+					for (Chunk chunk : session.getChunkWatchlist()){
+						session.send("> cx="+chunk.getX()+", cz="+chunk.getZ());
+					}
+				}
+			}
+			
 			else {
 				session.send("> ERROR: Unknown command.");
 			}

@@ -60,6 +60,10 @@ public class Session {
 		return (watchAll || watchlist.contains(chunk));
 	}
 	
+	public boolean isWatchingWorld(){
+		return watchAll;
+	}
+	
 	public void setWatchFullWorld(boolean w){
 		watchAll = w;
 	}
@@ -67,6 +71,10 @@ public class Session {
 	public void reset(){
 		watchlist.clear();
 		watchAll = false;
+	}
+	
+	public List<Chunk> getChunkWatchlist(){
+		return watchlist;
 	}
 	
 	public void close(){
