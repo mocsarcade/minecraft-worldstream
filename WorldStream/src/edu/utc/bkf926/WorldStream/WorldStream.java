@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WorldStream extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.60";
+	public static String VERSION = "0.5.61";
 	public static boolean cullingEnabled;
 	
 	@Override

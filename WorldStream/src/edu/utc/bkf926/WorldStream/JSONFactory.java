@@ -184,6 +184,29 @@ public class JSONFactory {
 		
 	}
 	
+	/**
+	 * Checks if a block should be broadcast as a de-culled block.
+	 * If the block has no covered faces EXCEPT the ignored one, then we return true.
+	 * Only check this on a block break event.
+	 * @param block
+	 * @return
+	 */
+	public static boolean shouldBlockBeDeculled(Block block, BlockFace ignoredFace){
+		if (block.getTypeId()==0) return false; //Never broadcast air blocks
+		
+		if (ignoredFace!=BlockFace.NORTH && block.getRelative(BlockFace.NORTH, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.SOUTH && block.getRelative(BlockFace.SOUTH, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.EAST && block.getRelative(BlockFace.EAST, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.WEST && block.getRelative(BlockFace.WEST, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.UP && block.getRelative(BlockFace.UP, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.DOWN && block.getRelative(BlockFace.DOWN, 1).getTypeId()==0) return false;
+		
+		WorldStream.debug("Sending a deculling update!");
+		return true; //base case
+		//If none of these are hits, then the block has no covered faces that aren't the face relative to the block we just broke.
+		//Therefore it is newly revealed and needs to be broadcast.
+	}
+	
 	public static String getBlockMetadata(Block block){
 		
 		StringBuilder metadata = new StringBuilder();

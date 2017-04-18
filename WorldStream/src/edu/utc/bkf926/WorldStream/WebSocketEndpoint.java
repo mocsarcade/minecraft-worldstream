@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -136,6 +137,10 @@ public class WebSocketEndpoint extends WebSocketServer{
 				}
 			}
 			
+			else {
+				session.send("> ERROR: Unknown command.");
+			}
+			
 		} catch (Exception e){
 			arg0.send("> ERROR: There was an unknown error processing your request. Check the formatting of your command.");
 			WorldStream.logException(e, false);
@@ -164,7 +169,9 @@ public class WebSocketEndpoint extends WebSocketServer{
 				if (session.isWatching(block.getChunk())){
 					String json = JSONFactory.getEventJSON(block, place);
 					session.send(json);
-					// TODO Deculling logic goes here.
+					if (!place){
+						checkNeighborsForDeculling(block, session);
+					}
 				}
 			}
 		}
@@ -177,6 +184,27 @@ public class WebSocketEndpoint extends WebSocketServer{
 					session.send(json);
 					// TODO Entity chunk-checking.
 			}
+		}
+	}
+	
+	public void checkNeighborsForDeculling(Block block, Session session){
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.NORTH, 1), BlockFace.SOUTH)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.NORTH, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.SOUTH, 1), BlockFace.NORTH)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.SOUTH, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.EAST, 1), BlockFace.WEST)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.EAST, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.WEST, 1), BlockFace.EAST)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.WEST, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.UP, 1), BlockFace.DOWN)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.UP, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.DOWN, 1), BlockFace.UP)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.DOWN, 1), true));
 		}
 	}
 	
