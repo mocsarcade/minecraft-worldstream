@@ -1,8 +1,5 @@
 package edu.utc.bkf926.WorldStream;
 
-import java.util.Arrays;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,7 +16,6 @@ import org.bukkit.material.Crops;
 import org.bukkit.material.Directional;
 import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
 import org.bukkit.material.Step;
 import org.bukkit.material.Torch;
 import org.bukkit.material.Tree;
@@ -62,7 +58,7 @@ public class JSONFactory {
 	}
 	
 	public static String getChunkJSON(Chunk chunk){
-		String chunkHeader = "{ \n\"position\": {\"x\":"+chunk.getX()+", \"z\":"+chunk.getZ()+"},\n"
+		String chunkHeader = "{ \n\"position\": {\"cx\":"+chunk.getX()+", \"cz\":"+chunk.getZ()+"},\n"
 				+ "\"blocks\" : [ \n";
 		String chunkMid = "\n], \n\"entities\": [ \n";
 		String chunkFooter = "\n]\n }\n";
@@ -186,6 +182,29 @@ public class JSONFactory {
 			return false;
 		}
 		
+	}
+	
+	/**
+	 * Checks if a block should be broadcast as a de-culled block.
+	 * If the block has no covered faces EXCEPT the ignored one, then we return true.
+	 * Only check this on a block break event.
+	 * @param block
+	 * @return
+	 */
+	public static boolean shouldBlockBeDeculled(Block block, BlockFace ignoredFace){
+		if (block.getTypeId()==0) return false; //Never broadcast air blocks
+		
+		if (ignoredFace!=BlockFace.NORTH && block.getRelative(BlockFace.NORTH, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.SOUTH && block.getRelative(BlockFace.SOUTH, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.EAST && block.getRelative(BlockFace.EAST, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.WEST && block.getRelative(BlockFace.WEST, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.UP && block.getRelative(BlockFace.UP, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.DOWN && block.getRelative(BlockFace.DOWN, 1).getTypeId()==0) return false;
+		
+		WorldStream.debug("Sending a deculling update!");
+		return true; //base case
+		//If none of these are hits, then the block has no covered faces that aren't the face relative to the block we just broke.
+		//Therefore it is newly revealed and needs to be broadcast.
 	}
 	
 	public static String getBlockMetadata(Block block){

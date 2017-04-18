@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,17 +13,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WorldStream extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.5.59";
+	public static String VERSION = "0.9.62";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -127,28 +123,16 @@ public class WorldStream extends JavaPlugin implements Listener{
 				int count = WebSocketEndpoint.getInstance().getSessionCount();
 				
 				sender.sendMessage(ChatColor.GREEN + "Connected clients: "+ChatColor.DARK_GREEN+count);
-				for (WebSocketEndpoint.WSStreamingSession session : WebSocketEndpoint.getInstance().getSessions()){
-					String user = session.getName();
+				for (Session session : WebSocketEndpoint.getInstance().getSessions()){
+					String user = session.getUsername();
 					String world = session.getWorld().getName();
-					if (session.getChunk()==null){
-						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
+					sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
 								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
-						);
-					}
-					else {
-						int x = session.getChunk().getX();
-						int z = session.getChunk().getZ();
-						
-						sender.sendMessage(ChatColor.GREEN + "User: " + ChatColor.DARK_GREEN + user
-								+ ChatColor.GREEN + ", World: " + ChatColor.DARK_GREEN + world
-								+ ChatColor.GREEN + ", Chunk: " + ChatColor.DARK_GREEN + "(" + x + ", " + z + ")"
 						);
 					}
 				}
 				return true;
 			}
-			
-		}
 		
 		return false; //base case
 	}

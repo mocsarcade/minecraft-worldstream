@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -35,17 +36,17 @@ public class WebSocketEndpoint extends WebSocketServer{
 
 	public WebSocketEndpoint(InetSocketAddress address){
 		super(address);
-		sessions = new ArrayList<WSStreamingSession>();
+		sessions = new ArrayList<Session>();
 	}
 	
-	private List<WSStreamingSession> sessions;
+	private List<Session> sessions;
 	private String error;
 	
 	public int getSessionCount(){
 		return sessions.size();
 	}
 	
-	public List<WSStreamingSession> getSessions(){
+	public List<Session> getSessions(){
 		return sessions;
 	}
 	
@@ -56,8 +57,8 @@ public class WebSocketEndpoint extends WebSocketServer{
 	@Override
 	public void onClose(WebSocket arg0, int arg1, String arg2, boolean arg3) {
 		Bukkit.getLogger().info("[WorldStream] WebSocket client disconnected: "+arg0.getRemoteSocketAddress().toString());
-		WSStreamingSession session = getSession(arg0);
-		WorldStream.announceStream(session.getName(), session.getWorld(), false);
+		Session session = getSession(arg0);
+		WorldStream.announceStream(session.getUsername(), session.getWorld(), false);
 		sessions.remove(session);
 	}
 
@@ -69,126 +70,162 @@ public class WebSocketEndpoint extends WebSocketServer{
 
 	@Override
 	public void onMessage(WebSocket arg0, String arg1) {
-		String[] parameters = arg1.split(",");
-		HashMap<String, String> msgValues = new HashMap<String, String>();
-		WSStreamingSession session = getSession(arg0);
-		WorldStream.announceStream(session.getName(), session.getWorld(), false);
-		
 		try {
-			for (String s : parameters){
-				msgValues.put(s.split("=")[0], s.split("=")[1]);
+			Session session = getSession(arg0);
+			String[] cmdTokens = arg1.split(" ");
+			String cmd = cmdTokens[0];
+			
+			if (cmd.equalsIgnoreCase("world")){
+				if (Bukkit.getServer().getWorld(cmdTokens[1]) == null){
+					session.send("> ERROR: World not found.");
+				} else {
+					session.changeWorld(Bukkit.getServer().getWorld(cmdTokens[1]));
+					session.send("> OK: World updated to "+session.getWorld().getName());
+				}
 			}
 			
-			if (msgValues.containsKey("user")){
-				session.setName(msgValues.get("user"));
-			}
-			if (msgValues.containsKey("world")){
-				session.setWorld(Bukkit.getServer().getWorld(msgValues.get("world")));
-				if (session.getWorld()==null) throw new Exception("world");
-			}
-			if (msgValues.containsKey("x") && msgValues.containsKey("z")){
-				int x = Integer.parseInt(msgValues.get("x"));
-				int z = Integer.parseInt(msgValues.get("z"));
-				session.setChunk(session.getWorld().getChunkAt(x, z));
-				if (session.getChunk()==null) throw new Exception("chunk");
+			else if (cmd.equalsIgnoreCase("user")){
+				session.setUsername(cmdTokens[1]);
+				session.send("> OK: Username updated to "+session.getUsername());
 			}
 			
-			WorldStream.announceStream(session.getName(), session.getWorld(), true);
-			arg0.send("SUCCESS: Your session parameters have been updated.");
-		}
-		catch (NumberFormatException | IndexOutOfBoundsException e){
-			arg0.send("ERROR: WorldStream cannot parse your request. Please check the WebSockets API and make sure your request is formatted correctly.");
-		}
-		catch (NullPointerException e){
-			WorldStream.debug("Encountered Null Session!");
-			WorldStream.logException(e, false);
-		}
-		catch (Exception e){
-			if (e.getMessage().equals("world")){
-				arg0.send("ERROR: World not found. Please send another setup message to correct this error; you will not receive updates until you do.");
+			else if (cmd.equalsIgnoreCase("reset")){
+				session.reset();
+				session.send("> OK: Watchlist cleared.");
 			}
+			
+			else if (cmd.equalsIgnoreCase("watchworld")){
+				session.setWatchFullWorld(true);
+				session.send("> OK: You are now watching this entire world.");
+			}
+			
+			else if (cmd.equalsIgnoreCase("watch")){
+				int cx = Integer.parseInt(cmdTokens[1]);
+				int cz = Integer.parseInt(cmdTokens[2]);
+				Chunk chunk = session.getWorld().getChunkAt(cx, cz);
+				
+				if (chunk==null){
+					session.send("> ERROR: Couldn't load that chunk. Has it been generated/loaded recently?");
+				} else {
+					session.addChunk(chunk);
+					session.send("> OK: Chunk added.");
+				}
+			}
+			
+			else if (cmd.equalsIgnoreCase("unwatch")){
+				int cx = Integer.parseInt(cmdTokens[1]);
+				int cz = Integer.parseInt(cmdTokens[2]);
+				Chunk chunk = session.getWorld().getChunkAt(cx, cz);
+				
+				if (chunk==null){
+					session.send("> ERROR: Couldn't load that chunk. Has it been generated/loaded recently?");
+				} else {
+					session.removeChunk(chunk);
+					session.send("> OK: Chunk removed.");
+				}
+			}
+			
+			else if (cmd.equalsIgnoreCase("get")){
+				int cx = Integer.parseInt(cmdTokens[1]);
+				int cz = Integer.parseInt(cmdTokens[2]);
+				Chunk chunk = session.getWorld().getChunkAt(cx, cz);
+				
+				if (chunk==null){
+					session.send("> ERROR: Couldn't load that chunk. Has it been generated/loaded recently?");
+				} else {
+					session.send(JSONFactory.getChunkJSON(chunk));
+				}
+			}
+			
+			else if (cmd.equalsIgnoreCase("status")){
+				session.send("> SESSION STATUS");
+				session.send("> Username: "+session.getUsername());
+				session.send("> World: "+session.getWorld().getName());
+				if (session.isWatchingWorld()){
+					session.send("> Watchlist: Entire world");
+				}
+				else {
+					session.send("> Watchlist: "+session.getChunkWatchlist().size()+" chunks:");
+					for (Chunk chunk : session.getChunkWatchlist()){
+						session.send("> cx="+chunk.getX()+", cz="+chunk.getZ());
+					}
+				}
+			}
+			
 			else {
-				arg0.send("ERROR: Chunk not found. Is it loaded? Please send another setup message to correct this error; you will not receive updates until you do.");
+				session.send("> ERROR: Unknown command.");
 			}
+			
+		} catch (Exception e){
+			arg0.send("> ERROR: There was an unknown error processing your request. Check the formatting of your command.");
+			WorldStream.logException(e, false);
 		}
 	}
 
 	@Override
 	public void onOpen(WebSocket arg0, ClientHandshake arg1) {
 		Bukkit.getLogger().info("[WorldStream] WebSocket client connected from "+arg0.getRemoteSocketAddress().toString());
-		arg0.send("WorldStream Version "+WorldStream.VERSION+": Stream opened successfully.");
-		arg0.send("Please specify world and chunk(s) to stream; you will not receive any updates until you do so!");
-		WSStreamingSession session = new WSStreamingSession(arg0);
+		arg0.send("> WorldStream Version "+WorldStream.VERSION+": Stream opened successfully.");
+		arg0.send("> Please set a world and chunk(s) to stream. You will receive no updates until you add chunks to your watchlist.");
+		Session session = new Session(arg0);
 		sessions.add(session);
 	}
 	
-	private WSStreamingSession getSession(WebSocket socket){
-		for (WSStreamingSession session : sessions){
-			if (session.getConnection()==socket) return session;
+	private Session getSession(WebSocket socket){
+		for (Session session : sessions){
+			if (session.getConnectionSocket()==socket) return session;
 		}
 		return null;
 	}
 	
-	public static class WSStreamingSession{
-		private WebSocket connection;
-		private String name;
-		private World world;
-		private Chunk chunk;
-		private WSStreamingSession(WebSocket socket){
-			name = "Anonymous user";
-			connection = socket;
-		}
-		private WebSocket getConnection() {
-			return connection;
-		}
-		public String getName() {
-			return name;
-		}
-		private void setName(String name) {
-			this.name = name;
-		}
-		public World getWorld() {
-			return world;
-		}
-		private void setWorld(World world) {
-			this.world = world;
-		}
-		public Chunk getChunk() {
-			return chunk;
-		}
-		private void setChunk(Chunk chunk) {
-			this.chunk = chunk;
-		}
-		
-	}
-	
 	public void broadcastBlockChange(Block block, boolean place){
-		for (WSStreamingSession session : sessions){
-			if (block.getWorld().equals(session.getWorld())){
-				if (session.getChunk()==null || block.getChunk().equals(session.getChunk())){
-					String blockJson = JSONFactory.getEventJSON(block, place);
-					WorldStream.debug("Sending update to user "+session.getName()+": "+blockJson);
-					//session.getConnection().send("testing");
-					session.getConnection().send(blockJson);
+		for (Session session : sessions){
+			if (session.getWorld().equals(block.getWorld())){
+				if (session.isWatching(block.getChunk())){
+					String json = JSONFactory.getEventJSON(block, place);
+					session.send(json);
+					if (!place){
+						checkNeighborsForDeculling(block, session);
+					}
 				}
 			}
 		}
 	}
 	
 	public void broadcastEntityChange(Entity entity, boolean place){
-		for (WSStreamingSession session : sessions){
-			if (entity.getWorld().equals(session.getWorld())){
-					String Json = JSONFactory.getEntityEventJSON(entity, place);
-					WorldStream.debug("Sending update to user "+session.getName()+": "+Json);
-					//session.getConnection().send("testing");
-					session.getConnection().send(Json);
+		for (Session session : sessions){
+			if (session.getWorld().equals(entity.getWorld())){
+					String json = JSONFactory.getEntityEventJSON(entity, place);
+					session.send(json);
+					// TODO Entity chunk-checking.
 			}
 		}
 	}
 	
+	public void checkNeighborsForDeculling(Block block, Session session){
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.NORTH, 1), BlockFace.SOUTH)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.NORTH, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.SOUTH, 1), BlockFace.NORTH)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.SOUTH, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.EAST, 1), BlockFace.WEST)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.EAST, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.WEST, 1), BlockFace.EAST)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.WEST, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.UP, 1), BlockFace.DOWN)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.UP, 1), true));
+		}
+		if (JSONFactory.shouldBlockBeDeculled(block.getRelative(BlockFace.DOWN, 1), BlockFace.UP)){
+			session.send(JSONFactory.getEventJSON(block.getRelative(BlockFace.DOWN, 1), true));
+		}
+	}
+	
 	public void closeAll(){
-		for (WSStreamingSession session : sessions){
-			session.getConnection().closeConnection(0, "Server is shutting down.");
+		for (Session session : sessions){
+			session.close();
 		}
 	}
 	

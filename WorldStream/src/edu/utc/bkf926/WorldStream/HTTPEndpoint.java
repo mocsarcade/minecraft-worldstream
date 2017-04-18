@@ -10,12 +10,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
+//I know suppressing warnings is generally a bad idea. But I also know this API isn't official, and we're using it anyway. No need to litter the code with underlines.
+@SuppressWarnings("restriction")
 public class HTTPEndpoint {
 	
 	static HttpServer server;
 	static String error;
 
-	@SuppressWarnings("restriction")
 	public static void startServer() throws IOException{
 		int port = WorldStream.config.getInt("http-server-port");
 		error = null;
