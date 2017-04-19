@@ -19,7 +19,7 @@ public class Session {
 	
 	public Session(WebSocket socket){
 		connection = socket;
-		user = "Streamer"+(nextSessionId++);
+		user = "Streamer"+(++nextSessionId);
 		watchlist = new ArrayList<Chunk>();
 	}
 	
@@ -34,6 +34,7 @@ public class Session {
 	public void changeWorld(World world){
 		this.world = world;
 		watchlist.clear();
+		watchAll = false;
 	}
 	
 	public void addChunk(Chunk chunk){

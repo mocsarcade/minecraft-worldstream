@@ -79,8 +79,10 @@ public class WebSocketEndpoint extends WebSocketServer{
 				if (Bukkit.getServer().getWorld(cmdTokens[1]) == null){
 					session.send("> ERROR: World not found.");
 				} else {
+					if (session.getWorld()!=null) WorldStream.announceStream(session.getUsername(), session.getWorld(), false); //Send a "stopped streaming" chat to the old world
 					session.changeWorld(Bukkit.getServer().getWorld(cmdTokens[1]));
 					session.send("> OK: World updated to "+session.getWorld().getName());
+					WorldStream.announceStream(session.getUsername(), session.getWorld(), true); //Send a "started streaming" chat to the new world
 				}
 			}
 			
@@ -140,7 +142,11 @@ public class WebSocketEndpoint extends WebSocketServer{
 			else if (cmd.equalsIgnoreCase("status")){
 				session.send("> SESSION STATUS");
 				session.send("> Username: "+session.getUsername());
-				session.send("> World: "+session.getWorld().getName());
+				if (session.getWorld()==null){
+					session.send("> World: Not set! Use \"world [name]\" to set a world name to stream.");
+				} else {
+					session.send("> World: "+session.getWorld().getName());
+				}
 				if (session.isWatchingWorld()){
 					session.send("> Watchlist: Entire world");
 				}
