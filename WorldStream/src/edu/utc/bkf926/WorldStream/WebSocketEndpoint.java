@@ -142,7 +142,11 @@ public class WebSocketEndpoint extends WebSocketServer{
 			else if (cmd.equalsIgnoreCase("status")){
 				session.send("> SESSION STATUS");
 				session.send("> Username: "+session.getUsername());
-				session.send("> World: "+session.getWorld().getName());
+				if (session.getWorld()==null){
+					session.send("> World: Not set! Use \"world [name]\" to set a world name to stream.");
+				} else {
+					session.send("> World: "+session.getWorld().getName());
+				}
 				if (session.isWatchingWorld()){
 					session.send("> Watchlist: Entire world");
 				}

@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class WorldStream extends JavaPlugin implements Listener{
 
 	static FileConfiguration config;
-	public static String VERSION = "0.9.63";
+	public static String VERSION = "1.0.64";
 	public static boolean cullingEnabled;
 	
 	@Override
@@ -87,7 +87,7 @@ public class WorldStream extends JavaPlugin implements Listener{
 				return true;
 			}
 			
-			if (args[0].equalsIgnoreCase("info")){
+			if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("status")){
 				sender.sendMessage(ChatColor.GREEN + "This server is running WorldStream v"+VERSION);
 				
 				if (config.getBoolean("http-server-enabled")){
@@ -133,6 +133,8 @@ public class WorldStream extends JavaPlugin implements Listener{
 				}
 				return true;
 			}
+		
+			sender.sendMessage("Unknown WS command. Try clients or status.");
 		
 		return false; //base case
 	}
