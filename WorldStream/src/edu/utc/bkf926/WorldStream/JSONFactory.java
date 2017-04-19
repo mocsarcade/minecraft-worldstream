@@ -146,34 +146,22 @@ public class JSONFactory {
 			 */
 			//Top face
 			Block testBlock = block.getRelative(BlockFace.UP, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			//Bottom face
 			testBlock = block.getRelative(BlockFace.DOWN, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			//East face
 			testBlock = block.getRelative(BlockFace.EAST, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			//West face
 			testBlock = block.getRelative(BlockFace.WEST, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			//South face
 			testBlock = block.getRelative(BlockFace.SOUTH, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			//North face
 			testBlock = block.getRelative(BlockFace.NORTH, 1);
-			for (int i : TRANSPARENT){
-				if (testBlock.getTypeId()==i) return false;
-			}
+			if (isTransparent(testBlock)) return false;
 			
 			return true;
 		}
@@ -194,17 +182,24 @@ public class JSONFactory {
 	public static boolean shouldBlockBeDeculled(Block block, BlockFace ignoredFace){
 		if (block.getTypeId()==0) return false; //Never broadcast air blocks
 		
-		if (ignoredFace!=BlockFace.NORTH && block.getRelative(BlockFace.NORTH, 1).getTypeId()==0) return false;
-		if (ignoredFace!=BlockFace.SOUTH && block.getRelative(BlockFace.SOUTH, 1).getTypeId()==0) return false;
-		if (ignoredFace!=BlockFace.EAST && block.getRelative(BlockFace.EAST, 1).getTypeId()==0) return false;
-		if (ignoredFace!=BlockFace.WEST && block.getRelative(BlockFace.WEST, 1).getTypeId()==0) return false;
-		if (ignoredFace!=BlockFace.UP && block.getRelative(BlockFace.UP, 1).getTypeId()==0) return false;
-		if (ignoredFace!=BlockFace.DOWN && block.getRelative(BlockFace.DOWN, 1).getTypeId()==0) return false;
+		if (ignoredFace!=BlockFace.NORTH && isTransparent(block.getRelative(BlockFace.NORTH, 1))) return false;
+		if (ignoredFace!=BlockFace.SOUTH && isTransparent(block.getRelative(BlockFace.SOUTH, 1))) return false;
+		if (ignoredFace!=BlockFace.EAST && isTransparent(block.getRelative(BlockFace.EAST, 1))) return false;
+		if (ignoredFace!=BlockFace.WEST && isTransparent(block.getRelative(BlockFace.WEST, 1))) return false;
+		if (ignoredFace!=BlockFace.UP && isTransparent(block.getRelative(BlockFace.UP, 1))) return false;
+		if (ignoredFace!=BlockFace.DOWN && isTransparent(block.getRelative(BlockFace.DOWN, 1))) return false;
 		
 		WorldStream.debug("Sending a deculling update!");
 		return true; //base case
 		//If none of these are hits, then the block has no covered faces that aren't the face relative to the block we just broke.
 		//Therefore it is newly revealed and needs to be broadcast.
+	}
+	
+	public static boolean isTransparent(Block block){
+		for (int i : TRANSPARENT){
+			if (block.getTypeId()==i) return true;
+		}
+		return false;
 	}
 	
 	public static String getBlockMetadata(Block block){
